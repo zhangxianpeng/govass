@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/titlebar_layout" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/account"
+            style="@style/InfoItem.Account"
+            android:layout_height="60dp"
+            app:sLeftIconRes="@drawable/default_tx_img"
+            app:sLeftTextString="帐号管理"
+            app:sLeftViewMarginLeft="10dp" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/tuiguang"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="推广下载" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/kefu"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="联系客服" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/switchAccount"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="切换账号" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/updatePwd"
+            style="@style/InfoItem.Account"
+            app:sDividerLineType="none"
+            app:sLeftTextString="修改密码" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            style="@style/InfoItem.Account"
+            app:sRightTextString="1.0.1"
+            app:sLeftTextString="版本信息" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/logout"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="退出账号" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
