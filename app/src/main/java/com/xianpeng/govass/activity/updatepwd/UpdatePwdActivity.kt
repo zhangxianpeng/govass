@@ -63,7 +63,7 @@ class UpdatePwdActivity : BaseActivity<BaseViewModel>() {
             }
 
             var updatePwdReqVo = JSONObject()
-            updatePwdReqVo.put("password", AESUtils.encrypt(password))
+            updatePwdReqVo.put("password", AESUtils.encrypt(oldpwd))
             updatePwdReqVo.put("newPassword", AESUtils.encrypt(repaeatPwd))
 
             AndroidNetworking.post(Constants.POST_UPDATE_PWD)

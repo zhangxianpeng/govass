@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerPreviewActivity
@@ -17,8 +18,11 @@ import com.tbruyelle.rxpermissions3.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.POST_SEND_DYMENT
+import com.xianpeng.govass.Constants.Companion.UPLOAD_MULTY_FILE
 import com.xianpeng.govass.R
 import com.xianpeng.govass.base.BaseActivity
+import com.xianpeng.govass.bean.Attachment
+import com.xianpeng.govass.bean.BaseFileUploadRes
 import com.xianpeng.govass.bean.BaseGovassResponse
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.ext.toastError
@@ -33,14 +37,14 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 
-
 class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLayout.Delegate {
-    var contentType:Int = 0
+    var contentType: Int = -1
     var attachment: List<String>? = ArrayList()
     override fun layoutId(): Int = R.layout.activity_send_dyment
 
     override fun initView(savedInstanceState: Bundle?) {
         ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
+        contentType= intent.getIntExtra("contentType",-1)
         titlebar.setLeftClickListener { finish() }
         titlebar.setTitle("发布动态")
         titlebar.addAction(object : TitleBar.Action {
@@ -51,36 +55,17 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
                     toastNormal("必须输入内容！")
                     return
                 }
-
-                // TODO: 2021/3/21 先上传图片  测试一张图片上传
-//                if(attachment!!.isNotEmpty()) {
-//                    var fileName = File(attachment!!.get(0).trim())
-//                }
-
-                var sendDymentReqVo = JSONObject()
-                sendDymentReqVo.put("content", content)
-                sendDymentReqVo.put("title", "")
-                sendDymentReqVo.put("contentType", contentType)   //千企 1 商业 0
-                AndroidNetworking.post(POST_SEND_DYMENT).addHeaders("token", MMKV.defaultMMKV().getString("loginToken", "")).addJSONObjectBody(sendDymentReqVo)
-                    .build()
-                    .getAsObject(BaseGovassResponse::class.java, object :
-                        ParsedRequestListener<BaseGovassResponse> {
-                        override fun onResponse(response: BaseGovassResponse?) {
-                            if (response == null) {
-                                toastError("动态发布失败，请稍后再试")
-                                return
-                            }
-                            if (response.code != 0) {
-                                showMessage(response.msg)
-                                return
-                            }
-                            toastSuccess("动态发布成功，待管理员审核")
-                        }
-
-                        override fun onError(anError: ANError?) {
-                            toastError("动态发布失败，请稍后再试")
-                        }
-                    })
+                var file: MutableList<File> = ArrayList()
+                if (attachment!!.isNotEmpty()) {
+                    showLoading("图片上传中...")
+                    for (i in 0 until attachment!!.size) {
+                        var fileData = File(attachment!!.get(i).trim())
+                        file.add(fileData)
+                    }
+                    uploadFile(file, content, contentType)
+                } else {
+                    sendDyment(null, content, contentType)
+                }
             }
 
             override fun rightPadding(): Int = 0
@@ -89,6 +74,74 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
         })
         declareInfoPhotoLayout.setDelegate(this)
     }
+
+    private fun uploadFile(file: MutableList<File>, content: String, contentType: Int) {
+        AndroidNetworking.upload(UPLOAD_MULTY_FILE)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .addMultipartFileList("file", file)
+            .build()
+            .getAsObject(BaseFileUploadRes::class.java, object :
+                ParsedRequestListener<BaseFileUploadRes> {
+                override fun onResponse(response: BaseFileUploadRes?) {
+                    dismissLoading()
+                    if (response == null) {
+                        toastError("")
+                        return
+                    }
+                    if (response.code != 0) {
+                        showMessage(response.msg)
+                        return
+                    }
+                    var attachmtnList: MutableList<Attachment> = ArrayList()
+                    for (i in 0 until response.data.size) {
+                        var attachmentItem: Attachment = response.data.get(i)
+                        attachmentItem.name = attachmentItem.fileName
+                        attachmentItem.url = attachmentItem.filePath
+                        attachmtnList.add(attachmentItem)
+                    }
+                    sendDyment(attachmtnList, content, contentType)
+                }
+
+                override fun onError(anError: ANError?) {
+                    dismissLoading()
+                    toastError(",failmsg=" + anError!!.errorDetail)
+                }
+            })
+    }
+
+    private fun sendDyment(attachmtnList: List<Attachment>?, content: String, contentType: Int) {
+        Log.e("zhangxianpeng","sendDyment");
+        var sendDymentReqVo = SaveDymentVo()
+        sendDymentReqVo.content = content
+        sendDymentReqVo.contentType = contentType  //千企 1 商业 0
+        if (attachmtnList != null) {
+            sendDymentReqVo.attachmentList = attachmtnList
+        }
+        AndroidNetworking.post(POST_SEND_DYMENT)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .addApplicationJsonBody(sendDymentReqVo)
+            .build()
+            .getAsObject(BaseGovassResponse::class.java, object :
+                ParsedRequestListener<BaseGovassResponse> {
+                override fun onResponse(response: BaseGovassResponse?) {
+                    if (response == null) {
+                        toastError("动态发布失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        showMessage(response.msg)
+                        return
+                    }
+                    toastSuccess("动态发布成功，待管理员审核")
+                    finish()
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError("动态发布失败，请稍后再试")
+                }
+            })
+    }
+
 
     override fun onClickNinePhotoItem(
         sortableNinePhotoLayout: BGASortableNinePhotoLayout?,

@@ -29,7 +29,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".fragment.dyment.SendDymentActivity"></activity>
+        <activity android:name=".fragment.dyment.DymentHistoryActivity"></activity>
+        <activity android:name=".fragment.dyment.SendDymentActivity" />
         <activity android:name=".activity.web.WebActivity" />
         <activity android:name=".activity.richtext.RichTextActivity" />
         <activity android:name=".activity.detailinfo.DetailInfoActivity" />

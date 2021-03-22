@@ -30,6 +30,7 @@ object CacheUtil {
 
     fun clearUserInfo() {
         val kv = MMKV.defaultMMKV()
+        kv.remove("loginToken")
         kv.remove("user")
     }
 

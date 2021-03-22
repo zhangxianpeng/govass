@@ -24,7 +24,7 @@ class Constants {
         //文件服务器
         const val FILE_SERVER = BASE_IP + "/govass/file-server/"
         //app版本更新
-        const val GET_APP_UPDATE_URL = BASE_IP + "/govass/sys/app-version/list"
+        const val GET_APP_UPDATE_URL = BASE_IP + "/govass/sys/app-version/lastest"
         //获取用户信息
         const val GET_USER_INFO = BASE_IP + "/govass/sys/user/info"
         //政策文件库列表
@@ -36,7 +36,7 @@ class Constants {
         //普通消息列表
         const val GET_NORMALMSG_LIST = BASE_IP + "/govass/sys/msg/list-me?page="
         //文件上传
-        const val UPLOAD_MULTY_FILE = BASE_IP + "/govass/file/upload"
+        const val UPLOAD_MULTY_FILE = BASE_IP + "/govass/file/batchUpload"
         //发布千企动态
         const val POST_SEND_DYMENT = BASE_IP + "/govass/sys/enterprise-notice/save"
         //千企动态发布历史

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_working"
+        android:icon="@drawable/tabar_selected_home"
+        android:title="政企工作间" />
+    <item
+        android:id="@+id/navigation_dyment"
+        android:icon="@drawable/tabar_selected_dynamic"
+        android:title="千企动态" />
+
+    <item
+        android:id="@+id/navigation_policy"
+        android:icon="@drawable/tabar_selected_user"
+        android:title="政策文件库" />
+
+    <item
+        android:id="@+id/navigation_mine"
+        android:icon="@drawable/tabar_selected_user"
+        android:title="个人中心" />
+</menu>

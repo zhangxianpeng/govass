@@ -41,12 +41,13 @@ class LoginActivity : BaseActivity<BaseViewModel>() {
         loginReqVo.put("password", encryptPwd)
         loginReqVo.put("username", username)
         loginReqVo.put("uuid", uuid)
-
+        showLoading()
         AndroidNetworking.post(DEFAULT_SERVER_LOGIN).addJSONObjectBody(loginReqVo)
             .build()
             .getAsObject(BaseGovassResponse::class.java, object :
                 ParsedRequestListener<BaseGovassResponse> {
                 override fun onResponse(response: BaseGovassResponse?) {
+                    dismissLoading()
                     if (response == null) {
                         toastError("登录失败，请稍后再试")
                         return
@@ -62,6 +63,7 @@ class LoginActivity : BaseActivity<BaseViewModel>() {
                 }
 
                 override fun onError(anError: ANError?) {
+                    dismissLoading()
                     toastError("登录失败，请稍后再试")
                 }
             })

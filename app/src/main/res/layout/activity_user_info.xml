@@ -1,9 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.userinfo.UserInfoActivity">
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/titlebar_layout" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/username"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="用户名" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/identityCard"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="身份证号" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/email"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="邮箱" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/mobile"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="电话" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/enterpriseName"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="企业名称" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/enterpriseCode"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="企业代码" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/legalRepresentative"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="企业法人" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/businessType"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="业务类型" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/businessScope"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="业务范围" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/registeredCapital"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="注册资金" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/setUpDate"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="成立日期" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/businessTerm"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="经营期限" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/address"
+            style="@style/InfoItem.Account"
+            app:sLeftTextString="公司地址" />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

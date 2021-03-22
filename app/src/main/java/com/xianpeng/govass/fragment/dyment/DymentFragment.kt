@@ -21,6 +21,7 @@ import com.xianpeng.govass.adapter.DymentAdapter
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.visible
+import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.fragment_dyment.*
 import kotlinx.android.synthetic.main.tab_title_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
@@ -29,12 +30,11 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
 
     private var adapter: DymentAdapter? = null
     private var currentPhotoLayout: BGANinePhotoLayout? = null
-
     private var data: MutableList<DymentItem> = ArrayList()
     private var currentClickPosition = -1
 
     var page = 1
-    var contentType = 1   // 0 商业  1 千企
+    var contentType = 0   // 0 千企  1 商业
 
     override fun layoutId(): Int {
         return R.layout.fragment_dyment
@@ -42,10 +42,12 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
 
     override fun initView(savedInstanceState: Bundle?) {
         //发布历史
-        historyIv.setOnClickListener {}
+        historyIv.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
+        addIv.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
+        historyIv.setOnClickListener { startActivity(Intent(activity, DymentHistoryActivity::class.java)) }
         //添加动态
         addIv.setOnClickListener {
-            startActivity(Intent(activity, SendDymentActivity::class.java))
+            startActivity(Intent(activity, SendDymentActivity::class.java).putExtra("contentType", contentType))
         }
         //千企点击
         ll_left.setOnClickListener {
@@ -54,7 +56,7 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
             left_indicator.visible(true)
             rightTabTv.setTypeface(null, NORMAL)
             right_indicator.visible(false)
-            contentType = 1
+            contentType = 0
             page = 1
             initPageData(page, contentType, true)
         }
@@ -65,7 +67,7 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
             left_indicator.visible(false)
             rightTabTv.setTypeface(null, BOLD)
             right_indicator.visible(true)
-            contentType = 0
+            contentType = 1
             page = 1
             initPageData(page, contentType, true)
         }

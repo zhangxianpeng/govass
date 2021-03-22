@@ -6,6 +6,7 @@ import android.view.View
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.login.LoginActivity
 import com.xianpeng.govass.activity.updatepwd.UpdatePwdActivity
+import com.xianpeng.govass.activity.userinfo.UserInfoActivity
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.util.CacheUtil
@@ -23,6 +24,7 @@ class MineFragment : BaseFragment<BaseViewModel>() {
         titlebar.addAction(msgAction)
         account.setLeftString(CacheUtil.getUser()?.realname)
 
+        account.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
         tuiguang.setOnClickListener { }
         kefu.setOnClickListener { }
         switchAccount.setOnClickListener {

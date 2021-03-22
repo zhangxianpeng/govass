@@ -76,6 +76,7 @@ class SplashActivity : BaseActivity<BaseViewModel>() {
     private fun checkAppUpdate() {
         AndroidNetworking.get(Constants.GET_APP_UPDATE_URL)
             .addHeaders("token", loginToken)
+            .addQueryParameter("device","0")
             .build()
             .getAsObject(BaseGovassResponse::class.java, object :
                 ParsedRequestListener<BaseGovassResponse> {

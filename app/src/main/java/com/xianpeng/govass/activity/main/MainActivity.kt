@@ -9,11 +9,13 @@ import com.gyf.immersionbar.ImmersionBar
 import com.xianpeng.govass.R
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.ext.toastNormal
+import com.xianpeng.govass.ext.visible
 import com.xianpeng.govass.fragment.dyment.DymentFragment
 import com.xianpeng.govass.fragment.mailist.MailistFragment
 import com.xianpeng.govass.fragment.mine.MineFragment
 import com.xianpeng.govass.fragment.policy.PolicyFragment
 import com.xianpeng.govass.fragment.working.WorkingFragment
+import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 
@@ -34,6 +36,8 @@ class MainActivity : BaseActivity<BaseViewModel>(),
 
     override fun initView(savedInstanceState: Bundle?) {
         ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
+        navigation_launch.visible(if (CacheUtil.getUser()?.userType == 0) true else false)
+        navigation_enter.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
         // "内存重启"时调用
         if (savedInstanceState != null) {
             val fragmentList = supportFragmentManager.fragments
@@ -49,6 +53,7 @@ class MainActivity : BaseActivity<BaseViewModel>(),
     private fun initTab(savedInstanceState: Bundle?) {
         setDefaultTab()
         navigation_launch.setOnNavigationItemSelectedListener(this)
+        navigation_enter.setOnNavigationItemSelectedListener(this)
     }
 
     private fun setDefaultTab() {
