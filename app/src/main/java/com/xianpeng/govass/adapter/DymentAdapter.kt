@@ -7,7 +7,6 @@ import cn.bingoogolapple.baseadapter.BGAViewHolderHelper
 import cn.bingoogolapple.photopicker.widget.BGANinePhotoLayout
 import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
-import com.xianpeng.govass.ext.toastNormal
 import com.xianpeng.govass.fragment.dyment.DymentItem
 
 /**
@@ -17,7 +16,7 @@ import com.xianpeng.govass.fragment.dyment.DymentItem
 class DymentAdapter(
     recyclerView: RecyclerView,
     private val delegate: BGANinePhotoLayout.Delegate
-) : BGARecyclerViewAdapter<DymentItem>(recyclerView, R.layout.dyment_item) {
+) : BGARecyclerViewAdapter<DymentItem>(recyclerView, R.layout.adapter_dyment_item) {
 
     override fun setItemChildListener(helper: BGAViewHolderHelper?, viewType: Int) {
         super.setItemChildListener(helper, viewType)

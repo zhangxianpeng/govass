@@ -1,6 +1,8 @@
 package com.xianpeng.govass.base
 
 import android.os.Bundle
+import com.gyf.immersionbar.ImmersionBar
+import com.xianpeng.govass.R
 import com.xianpeng.govass.ext.dismissLoadingExt
 import com.xianpeng.govass.ext.hideSoftKeyboard
 import com.xianpeng.govass.ext.showLoadingExt
@@ -15,6 +17,11 @@ abstract class BaseFragment<VM : BaseViewModel> : BaseVmFragment<VM>() {
 
     //Application全局的ViewModel，用于发送全局通知操作
     val eventViewModel: EventViewModel by lazy { getAppViewModel<EventViewModel>() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
+    }
 
     /**
      * 当前Fragment绑定的视图布局

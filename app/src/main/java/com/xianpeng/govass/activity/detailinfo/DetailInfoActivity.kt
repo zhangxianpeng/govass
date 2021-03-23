@@ -45,7 +45,6 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
     private val data: MutableList<Attachment> = ArrayList()
     override fun layoutId(): Int = R.layout.activity_deteal_info
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
         titlebar.setLeftClickListener { finish() }
         initAttachmentAdapter()
         var pageParam = intent.getStringExtra("pageParam")

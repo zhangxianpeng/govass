@@ -38,7 +38,6 @@
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/updatePwd"
             style="@style/InfoItem.Account"
-            app:sDividerLineType="none"
             app:sLeftTextString="修改密码" />
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -50,7 +49,6 @@
             android:id="@+id/logout"
             style="@style/InfoItem.Account"
             app:sLeftTextString="退出账号" />
-
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -19,6 +19,7 @@
             android:src="@drawable/home_ic_placeholder" />
 
         <ImageView
+            android:id="@+id/iv_right"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:layout_alignParentRight="true"
@@ -32,11 +33,15 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
+            android:layout_toLeftOf="@+id/iv_right"
             android:layout_toRightOf="@+id/iv_msg"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
             android:text="关于《政企消息》的审核结果"
             android:textColor="#ff131008"
             android:textSize="14sp" />
     </RelativeLayout>
 
-    <include layout="@layout/light_gray_diver_horizontal_1dp"></include>
+    <include layout="@layout/diver_layout" />
 </LinearLayout>

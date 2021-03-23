@@ -15,7 +15,6 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
     override fun layoutId(): Int = R.layout.activity_user_info
 
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
         titlebar.setTitle("个人信息")
         titlebar.setLeftClickListener { finish() }
 

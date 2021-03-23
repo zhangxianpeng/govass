@@ -33,7 +33,6 @@ class UpdatePwdActivity : BaseActivity<BaseViewModel>() {
     override fun layoutId(): Int = R.layout.activity_update_pwd
 
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
         titlebar.setTitle("修改密码")
         titlebar.setLeftClickListener { finish() }
         clearIv.setOnClickListener {

@@ -1,7 +1,6 @@
 package com.xianpeng.govass.fragment.dyment
 
 import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +10,6 @@ import cn.bingoogolapple.photopicker.widget.BGANinePhotoLayout
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
-import com.gyf.immersionbar.ImmersionBar
 import com.tbruyelle.rxpermissions3.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.Constants
@@ -19,11 +17,11 @@ import com.xianpeng.govass.R
 import com.xianpeng.govass.adapter.DymentAdapter
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.ext.toastError
-import kotlinx.android.synthetic.main.fragment_dyment.*
+import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 
-class DymentHistoryActivity : BaseActivity<BaseViewModel>() , BGANinePhotoLayout.Delegate{
+class DymentHistoryActivity : BaseActivity<BaseViewModel>(), BGANinePhotoLayout.Delegate {
     private var adapter: DymentAdapter? = null
     private var currentPhotoLayout: BGANinePhotoLayout? = null
     private var data: MutableList<DymentItem> = ArrayList()
@@ -31,14 +29,13 @@ class DymentHistoryActivity : BaseActivity<BaseViewModel>() , BGANinePhotoLayout
     override fun layoutId(): Int = R.layout.activity_dyment_history
 
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
         titlebar.setLeftClickListener { finish() }
         titlebar.setTitle("发布历史")
 
-        dymentRv.layoutManager = LinearLayoutManager(this)
-        adapter = DymentAdapter(dymentRv, this)
-        dymentRv.adapter = adapter
-        dymentRv.addOnScrollListener(BGARVOnScrollListener(this))
+        recycleview.layoutManager = LinearLayoutManager(this)
+        adapter = DymentAdapter(recycleview, this)
+        recycleview.adapter = adapter
+        recycleview.addOnScrollListener(BGARVOnScrollListener(this))
 
         showLoading()
         initPageData(page, true)

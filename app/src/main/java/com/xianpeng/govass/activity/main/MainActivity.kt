@@ -4,10 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.error.ANError
+import com.androidnetworking.interfaces.ParsedRequestListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.gyf.immersionbar.ImmersionBar
+import com.tencent.mmkv.MMKV
+import com.xianpeng.govass.Constants
 import com.xianpeng.govass.R
 import com.xianpeng.govass.base.BaseActivity
+import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastNormal
 import com.xianpeng.govass.ext.visible
 import com.xianpeng.govass.fragment.dyment.DymentFragment
@@ -18,6 +24,7 @@ import com.xianpeng.govass.fragment.working.WorkingFragment
 import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+import org.json.JSONObject
 
 class MainActivity : BaseActivity<BaseViewModel>(),
     BottomNavigationView.OnNavigationItemSelectedListener {
@@ -26,18 +33,14 @@ class MainActivity : BaseActivity<BaseViewModel>(),
      */
     private var lastBackPressTime = -1L
 
-    private var supportFragmentTag =
-        arrayOf(WORKING_TAG, DYMENT_TAG, MAILIST_TAG, POLICY_TAG, MINE_TAG)
+    private var supportFragmentTag = arrayOf(WORKING_TAG, DYMENT_TAG, MAILIST_TAG, POLICY_TAG, MINE_TAG)
     private var lastFragmentTag = ""
 
-    override fun layoutId(): Int {
-        return R.layout.activity_main
-    }
+    override fun layoutId(): Int = R.layout.activity_main
 
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
-        navigation_launch.visible(if (CacheUtil.getUser()?.userType == 0) true else false)
-        navigation_enter.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
+        navigation_launch.visible(CacheUtil.getUser()?.userType == 0)
+        navigation_enter.visible(CacheUtil.getUser()?.userType != 0)
         // "内存重启"时调用
         if (savedInstanceState != null) {
             val fragmentList = supportFragmentManager.fragments
@@ -58,26 +61,6 @@ class MainActivity : BaseActivity<BaseViewModel>(),
 
     private fun setDefaultTab() {
         switchToDestFragment(WORKING_TAG)
-    }
-
-    private fun onTabItemSelected(tabName: String?) {
-        when (tabName) {
-            "政企工作间" -> {
-                switchToDestFragment(WORKING_TAG)
-            }
-            "千企动态" -> {
-                switchToDestFragment(DYMENT_TAG)
-            }
-            "通讯录" -> {
-                switchToDestFragment(MAILIST_TAG)
-            }
-            "政企文件库" -> {
-                switchToDestFragment(POLICY_TAG)
-            }
-            "个人中心" -> {
-                switchToDestFragment(MINE_TAG)
-            }
-        }
     }
 
     private fun switchToDestFragment(destTag: String) {

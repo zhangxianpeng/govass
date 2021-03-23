@@ -10,6 +10,8 @@ import com.androidnetworking.interfaces.ParsedRequestListener
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.tencent.mmkv.MMKV
+import com.wyt.searchbox.SearchFragment
+import com.wyt.searchbox.custom.IOnSearchClickListener
 import com.xianpeng.govass.App
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.BANNER_PAGE
@@ -19,14 +21,17 @@ import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
 import com.xianpeng.govass.adapter.RecyclerViewBannerAdapter
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.banner.widget.banner.BannerItem
+import com.xuexiang.xui.widget.textview.badge.BadgeView
 import kotlinx.android.synthetic.main.fragment_working.*
+import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 
-
-class WorkingFragment : BaseFragment<BaseViewModel>() {
+class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener {
+    private val searchFragment by lazy { SearchFragment.newInstance() }
     private val page = 1
     private var mBannerOriginalData: MutableList<com.xianpeng.govass.fragment.working.BannerItem> =
         ArrayList()
@@ -46,10 +51,21 @@ class WorkingFragment : BaseFragment<BaseViewModel>() {
 
     override fun layoutId(): Int = R.layout.fragment_working
     override fun initView(savedInstanceState: Bundle?) {
+        BadgeView(context).bindTarget(titlebar).badgeNumber = CacheUtil.getUnReadCount()!!.toInt()
         titlebar.setLeftVisible(false)
         titlebar.setTitle("")
-        titlebar.addAction(searchAction)
+        titlebar.addAction(object : TitleBar.Action {
+            override fun leftPadding(): Int = 0
+            override fun performAction(view: View?) {
+                searchFragment.showFragment(activity?.supportFragmentManager, SearchFragment.TAG)
+            }
+
+            override fun rightPadding(): Int = 30
+            override fun getText(): String = ""
+            override fun getDrawable(): Int = R.drawable.ic_search_white_24dp
+        })
         titlebar.addAction(msgAction)
+        searchFragment.setOnSearchClickListener(this)
 
         banner2.setAdapter(object : RecyclerViewBannerAdapter(urls) {})
         initMsgAdapter()
@@ -65,8 +81,8 @@ class WorkingFragment : BaseFragment<BaseViewModel>() {
                 holder.setText(R.id.tv_title, item.title)
             }
         }
-        rv_normalmsg!!.layoutManager = LinearLayoutManager(App.instance)
-        rv_normalmsg!!.adapter = msgAdapter
+        recycleview!!.layoutManager = LinearLayoutManager(App.instance)
+        recycleview!!.adapter = msgAdapter
     }
 
     private fun initPageData() {
@@ -145,14 +161,6 @@ class WorkingFragment : BaseFragment<BaseViewModel>() {
             })
     }
 
-    object searchAction : TitleBar.Action {
-        override fun leftPadding(): Int = 0
-        override fun performAction(view: View?) {}
-        override fun rightPadding(): Int = 30
-        override fun getText(): String = ""
-        override fun getDrawable(): Int = R.drawable.ic_search_white_24dp
-    }
-
     object msgAction : TitleBar.Action {
         override fun leftPadding(): Int = 0
         override fun performAction(view: View?) {}
@@ -164,5 +172,9 @@ class WorkingFragment : BaseFragment<BaseViewModel>() {
     override fun onDestroy() {
         super.onDestroy()
         ad_banner.recycle()
+    }
+
+    override fun OnSearchClick(keyword: String?) {
+        TODO("Not yet implemented")
     }
 }

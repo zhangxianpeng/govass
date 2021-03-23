@@ -10,14 +10,17 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.bumptech.glide.Glide
 import com.tencent.mmkv.MMKV
+import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.DEFAULT_CAPTCHA_SERVER
 import com.xianpeng.govass.Constants.Companion.DEFAULT_SERVER_LOGIN
 import com.xianpeng.govass.Constants.Companion.GET_USER_INFO
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.main.MainActivity
+import com.xianpeng.govass.activity.perfectinfo.PerfectInfoActivity
 import com.xianpeng.govass.activity.register.RegisterActivity
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.bean.BaseGovassResponse
+import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.ext.hideSoftKeyboard
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.ext.toastError
@@ -30,7 +33,6 @@ import org.json.JSONObject
 import java.util.*
 
 class LoginActivity : BaseActivity<BaseViewModel>() {
-    private val TAG = "LoginActivity"
     private var uuid: String? = ""
     override fun layoutId(): Int = R.layout.activity_login
 
@@ -59,12 +61,43 @@ class LoginActivity : BaseActivity<BaseViewModel>() {
                     //获取用户信息
                     getUserInfo(response.data?.token, if (switchBtn.isChecked) password else "")
                     MMKV.defaultMMKV().putString("loginToken", response.data?.token)
-                    toMain()
+                    getUnReadMsgCount()
                 }
 
                 override fun onError(anError: ANError?) {
                     dismissLoading()
                     toastError("登录失败，请稍后再试")
+                }
+            })
+    }
+
+    private fun getUnReadMsgCount() {
+        AndroidNetworking.get(Constants.GET_UNREADMSG_COUNT)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build()
+            .getAsObject(BaseResponse::class.java, object :
+                ParsedRequestListener<BaseResponse> {
+                override fun onResponse(response: BaseResponse?) {
+                    if (response == null) {
+                        toastError("获取未读消息数失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        if (response.msg == "请先完善企业信息，才能进行下一步操作") {
+                            CacheUtil.setIsNeedPerfectionInfo(true)
+                            toPerfectInformationActivity()
+                        }
+                        return
+                    }
+                    CacheUtil.setUnReadCount(response.data)
+                    CacheUtil.setIsNeedPerfectionInfo(false)
+                    toMain()
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError("获取未读消息数失败，请稍后再试，msg=" + anError!!.errorDetail)
+                    finish()
                 }
             })
     }
@@ -162,6 +195,11 @@ class LoginActivity : BaseActivity<BaseViewModel>() {
 
     private fun toMain() {
         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+        finish()
+    }
+
+    private fun toPerfectInformationActivity() {
+        startActivity(Intent(this@LoginActivity, PerfectInfoActivity::class.java))
         finish()
     }
 }

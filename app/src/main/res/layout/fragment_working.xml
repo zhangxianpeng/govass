@@ -19,7 +19,6 @@
         android:id="@+id/banner2"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="10dp"
         app:bl_orientation="horizontal"
         app:bl_showIndicator="false" />
 
@@ -31,9 +30,6 @@
         android:textColor="@color/black"
         android:textSize="16sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_normalmsg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp" />
+    <include layout="@layout/layout_refresh_recycleview"/>
+
 </LinearLayout>

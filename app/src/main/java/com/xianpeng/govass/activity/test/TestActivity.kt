@@ -62,8 +62,8 @@ class TestActivity : AppCompatActivity() {
                             toastError("查询失败，请稍后再试")
                             return
                         }
-                        if (response.errorCode != 200) {
-                            showMessage(response.errorMsg)
+                        if (response.code != 200) {
+                            showMessage(response.msg)
                             return
                         }
                     }

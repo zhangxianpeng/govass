@@ -23,11 +23,11 @@ import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.visible
 import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.fragment_dyment.*
+import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.tab_title_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 
 class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegate {
-
     private var adapter: DymentAdapter? = null
     private var currentPhotoLayout: BGANinePhotoLayout? = null
     private var data: MutableList<DymentItem> = ArrayList()
@@ -41,13 +41,29 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
     }
 
     override fun initView(savedInstanceState: Bundle?) {
+        multiple_status_view.setOnRetryClickListener {
+            showLoading()
+            initPageData(page, contentType, true)
+        }
         //发布历史
-        historyIv.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
-        addIv.visible(if (CacheUtil.getUser()?.userType == 0) false else true)
-        historyIv.setOnClickListener { startActivity(Intent(activity, DymentHistoryActivity::class.java)) }
+        historyIv.visible(CacheUtil.getUser()?.userType != 0)
+        addIv.visible(CacheUtil.getUser()?.userType != 0)
+        historyIv.setOnClickListener {
+            startActivity(
+                Intent(
+                    activity,
+                    DymentHistoryActivity::class.java
+                )
+            )
+        }
         //添加动态
         addIv.setOnClickListener {
-            startActivity(Intent(activity, SendDymentActivity::class.java).putExtra("contentType", contentType))
+            startActivity(
+                Intent(activity, SendDymentActivity::class.java).putExtra(
+                    "contentType",
+                    contentType
+                )
+            )
         }
         //千企点击
         ll_left.setOnClickListener {
@@ -71,10 +87,10 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
             page = 1
             initPageData(page, contentType, true)
         }
-        dymentRv.layoutManager = LinearLayoutManager(context)
-        adapter = DymentAdapter(dymentRv, this)
-        dymentRv.adapter = adapter
-        dymentRv.addOnScrollListener(BGARVOnScrollListener(activity))
+        recycleview.layoutManager = LinearLayoutManager(context)
+        adapter = DymentAdapter(recycleview, this)
+        recycleview.adapter = adapter
+        recycleview.addOnScrollListener(BGARVOnScrollListener(activity))
 
         showLoading()
         initPageData(page, contentType, true)
@@ -101,9 +117,15 @@ class DymentFragment : BaseFragment<BaseViewModel>(), BGANinePhotoLayout.Delegat
                     if (isClearData) {
                         data.clear();
                     }
-                    data.addAll(result?.list!!)
-                    adapter?.data = data
-                    if (adapter != null) adapter!!.notifyDataSetChanged()
+
+                    if (result?.list!!.isEmpty()) {
+                        multiple_status_view.showEmpty()
+                    } else {
+                        multiple_status_view.showContent()
+                        data.addAll(result?.list!!)
+                        adapter?.data = data
+                        if (adapter != null) adapter!!.notifyDataSetChanged()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {

@@ -30,8 +30,26 @@ object CacheUtil {
 
     fun clearUserInfo() {
         val kv = MMKV.defaultMMKV()
-        kv.remove("loginToken")
-        kv.remove("user")
+        kv.clearAll()
+    }
+
+    fun setUnReadCount(count: String) {
+        val kv = MMKV.defaultMMKV()
+        if (count.isEmpty()) {
+            kv.putString("unreadmsgcount", "")
+        } else {
+            kv.putString("unreadmsgcount", count)
+        }
+    }
+
+    fun getUnReadCount(): String? {
+        val kv = MMKV.defaultMMKV()
+        val userStr = kv.getString("unreadmsgcount", "")
+        return if (TextUtils.isEmpty(userStr)) {
+            ""
+        } else {
+            userStr
+        }
     }
 
     /**
@@ -64,6 +82,19 @@ object CacheUtil {
     fun setFirst(first: Boolean): Boolean {
         val kv = MMKV.mmkvWithID("app")
         return kv.encode("first", first)
+    }
+
+    /**
+     * 是否需完善企业信息
+     */
+    fun setIsNeedPerfectionInfo(first: Boolean) {
+        val kv = MMKV.defaultMMKV()
+        kv.putBoolean("isNeedPerfectionInfo", first)
+    }
+
+    fun isNeedPerfectionInfo(): Boolean {
+        val kv = MMKV.defaultMMKV()
+        return kv.getBoolean("isNeedPerfectionInfo", false)
     }
 
     /**

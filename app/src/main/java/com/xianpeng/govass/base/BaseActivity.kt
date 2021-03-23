@@ -1,6 +1,8 @@
 package com.xianpeng.govass.base
 
 import android.os.Bundle
+import com.gyf.immersionbar.ImmersionBar
+import com.xianpeng.govass.R
 import com.xianpeng.govass.ext.dismissLoadingExt
 import com.xianpeng.govass.ext.showLoadingExt
 import me.hgj.jetpackmvvm.base.activity.BaseVmActivity
@@ -18,6 +20,11 @@ abstract class BaseActivity<VM : BaseViewModel> : BaseVmActivity<VM>() {
     abstract override fun layoutId(): Int
 
     abstract override fun initView(savedInstanceState: Bundle?)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
+    }
 
     /**
      * 创建liveData观察者

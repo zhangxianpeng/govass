@@ -12,6 +12,7 @@ class Constants {
          */
         const val BANNER_PAGE = "banner_page"
         const val POLICY_PAGE = "policy_page"
+
          //验证码
         const val DEFAULT_CAPTCHA_SERVER = BASE_IP + "/govass/captcha.jpg"
         //登录
@@ -43,5 +44,7 @@ class Constants {
         const val GET_DYMENT_SEND_HISTORY = BASE_IP + "/govass/sys/enterprise-notice/list-me?page="
         //企业动态历史
         const val GET_DYMENT_LIST = BASE_IP + "/govass/sys/enterprise-notice/list"
+        //未读消息数量
+        const val GET_UNREADMSG_COUNT = BASE_IP + "/govass/sys/msg/un-read"
     }
 }

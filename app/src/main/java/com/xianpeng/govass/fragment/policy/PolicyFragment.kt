@@ -21,7 +21,9 @@ import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
+import com.xuexiang.xui.widget.textview.badge.BadgeView
 import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
@@ -34,6 +36,7 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
     override fun layoutId(): Int = R.layout.fragment_policy
 
     override fun initView(savedInstanceState: Bundle?) {
+        BadgeView(context).bindTarget(titlebar).badgeNumber = CacheUtil.getUnReadCount()!!.toInt()
         titlebar.setTitle("政策文件库")
         titlebar.setLeftVisible(false)
         titlebar.addAction(msgAction)

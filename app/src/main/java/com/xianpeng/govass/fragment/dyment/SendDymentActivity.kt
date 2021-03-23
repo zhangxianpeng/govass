@@ -43,7 +43,6 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
     override fun layoutId(): Int = R.layout.activity_send_dyment
 
     override fun initView(savedInstanceState: Bundle?) {
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
         contentType= intent.getIntExtra("contentType",-1)
         titlebar.setLeftClickListener { finish() }
         titlebar.setTitle("发布动态")
