@@ -1,14 +1,13 @@
 package com.xianpeng.govass
 
-import com.androidnetworking.AndroidNetworking
-import com.androidnetworking.interceptors.HttpLoggingInterceptor
-import com.blankj.utilcode.util.ToastUtils
-import com.tencent.mmkv.MMKV
-import com.xianpeng.govass.ext.toastError
-import com.xuexiang.xui.XUI
 //import com.xuexiang.xupdate.XUpdate
 //import com.xuexiang.xupdate.entity.UpdateError.ERROR.CHECK_NO_NEW_VERSION
 //import com.xuexiang.xupdate.utils.UpdateUtils
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.interceptors.HttpLoggingInterceptor
+import com.tencent.mmkv.MMKV
+import com.xianpeng.govass.tencentx5.TbsInit
+import com.xuexiang.xui.XUI
 import me.hgj.jetpackmvvm.base.BaseApp
 
 
@@ -29,6 +28,7 @@ class App : BaseApp() {
         XUI.init(this)
         XUI.debug(true)
         AndroidNetworking.initialize(this)
-        AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY)
+//        AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY)
+        TbsInit.init(this)
     }
 }

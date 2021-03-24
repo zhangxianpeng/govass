@@ -29,20 +29,71 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".fragment.dyment.DymentHistoryActivity"></activity>
-        <activity android:name=".fragment.dyment.SendDymentActivity" />
-        <activity android:name=".activity.web.WebActivity" />
-        <activity android:name=".activity.richtext.RichTextActivity" />
-        <activity android:name=".activity.detailinfo.DetailInfoActivity" />
-        <activity android:name=".activity.test.JavaActivity" />
-        <activity android:name=".activity.perfectinfo.PerfectInfoActivity" />
-        <activity android:name=".activity.test.TestActivity" />
-        <activity android:name=".activity.userinfo.UserInfoActivity" />
-        <activity android:name=".activity.updatepwd.UpdatePwdActivity" />
-        <activity android:name=".activity.register.RegisterActivity" />
-        <activity android:name=".activity.login.LoginActivity" />
-        <activity android:name=".activity.main.MainActivity" />
-        <activity android:name=".activity.splash.SplashActivity">
+        <activity
+            android:name=".activity.common.CommonListActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.common.CommonActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".fragment.dyment.DymentHistoryActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".fragment.dyment.SendDymentActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.web.WebActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.richtext.RichTextActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.detailinfo.DetailInfoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.test.JavaActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.perfectinfo.PerfectInfoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.test.TestActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.userinfo.UserInfoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.updatepwd.UpdatePwdActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.register.RegisterActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.login.LoginActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.main.MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.splash.SplashActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -58,7 +109,8 @@
             android:value="true" /> <!-- 适配小米（xiaomi）刘海屏 -->
         <meta-data
             android:name="notch.config"
-            android:value="portrait|landscape" />
+            android:value="portrait|landscape" /> <!-- X5预加载 -->
+        <service android:name=".tencentx5.PreLoadX5Service" />
     </application>
 
 </manifest>

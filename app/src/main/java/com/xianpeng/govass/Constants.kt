@@ -37,6 +37,7 @@ class Constants {
         //普通消息列表
         const val GET_NORMALMSG_LIST = BASE_IP + "/govass/sys/msg/list-me?page="
         //文件上传
+        const val UPLOAD_MULTY_FILE_SINGLE = BASE_IP + "/govass/file/upload"
         const val UPLOAD_MULTY_FILE = BASE_IP + "/govass/file/batchUpload"
         //发布千企动态
         const val POST_SEND_DYMENT = BASE_IP + "/govass/sys/enterprise-notice/save"
@@ -46,5 +47,8 @@ class Constants {
         const val GET_DYMENT_LIST = BASE_IP + "/govass/sys/enterprise-notice/list"
         //未读消息数量
         const val GET_UNREADMSG_COUNT = BASE_IP + "/govass/sys/msg/un-read"
+        //完善企业信息
+        const val POST_ENTERPRISE_INFO = BASE_IP + "/govass/sys/enterprise/fill"
+
     }
 }

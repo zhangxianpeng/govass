@@ -13,10 +13,8 @@ import cn.bingoogolapple.photopicker.widget.BGASortableNinePhotoLayout
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
-import com.gyf.immersionbar.ImmersionBar
 import com.tbruyelle.rxpermissions3.RxPermissions
 import com.tencent.mmkv.MMKV
-import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.POST_SEND_DYMENT
 import com.xianpeng.govass.Constants.Companion.UPLOAD_MULTY_FILE
 import com.xianpeng.govass.R
@@ -29,11 +27,9 @@ import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastNormal
 import com.xianpeng.govass.ext.toastSuccess
 import com.xuexiang.xui.widget.actionbar.TitleBar
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_send_dyment.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
-import org.json.JSONObject
 import java.io.File
 import java.util.*
 

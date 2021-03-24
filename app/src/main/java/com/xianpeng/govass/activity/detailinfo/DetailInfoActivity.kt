@@ -1,5 +1,6 @@
 package com.xianpeng.govass.activity.detailinfo
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.webkit.WebResourceRequest
@@ -10,9 +11,7 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
-import com.gyf.immersionbar.ImmersionBar
 import com.just.agentweb.AgentWeb
 import com.just.agentweb.DefaultWebClient
 import com.just.agentweb.WebChromeClient
@@ -23,6 +22,7 @@ import com.xianpeng.govass.Constants.Companion.BANNER_PAGE
 import com.xianpeng.govass.Constants.Companion.GET_POLICY_DETAIL
 import com.xianpeng.govass.Constants.Companion.POLICY_PAGE
 import com.xianpeng.govass.R
+import com.xianpeng.govass.activity.common.CommonActivity
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.bean.Attachment
 import com.xianpeng.govass.ext.loadRichText
@@ -79,14 +79,26 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
         }
         rv_attachment!!.layoutManager = LinearLayoutManager(App.instance)
         rv_attachment!!.adapter = attachmentAdapter
-        attachmentAdapter!!.setOnItemClickListener(OnItemClickListener { adapter, view, position ->
-//            startActivity(
-//                Intent(
-//                    this@DetealInfoActivity,
-//                    DetealInfoActivity::class.java
-//                ).putExtra("policyId", data[position].id)
-//            )
-        })
+        attachmentAdapter!!.setOnItemClickListener { _, _, position ->
+            var attachment = data[position]
+            startActivity(
+                Intent(
+                    this,
+                    CommonActivity::class.java
+                ).putExtra("fileItem", data[position])
+            )
+            var fileName = attachment.name
+
+//            if (fileName.endsWith("PNG") ||
+//                fileName.endsWith("JPG") ||
+//                fileName.endsWith("JEPG") ||
+//                fileName.endsWith("png") ||
+//                fileName.endsWith("jpg") ||
+//                fileName.endsWith("jepg")
+//            ) {
+//
+//            }
+        }
     }
 
     private fun getPolicyDetail(policyId: Int) {

@@ -12,7 +12,12 @@ import android.view.ViewOutlineProvider
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.xianpeng.govass.Constants.Companion.FILE_SERVER
+import com.xianpeng.govass.R
+import kotlinx.android.synthetic.main.activity_login.*
 import org.apache.commons.lang3.StringEscapeUtils
 
 /**
@@ -179,4 +184,10 @@ fun WebView.loadRichText(str: String) {
         "UTF-8",
         null
     )
+}
+
+fun glidePicToImg(str: String,iv:ImageView) {
+    Glide.with(appContext).load(FILE_SERVER + str).placeholder(R.mipmap.ic_launcher)
+        .error(R.mipmap.ic_launcher)
+        .into(iv)
 }
