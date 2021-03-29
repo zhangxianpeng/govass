@@ -27,7 +27,6 @@ import com.xuexiang.xui.widget.picker.widget.builder.TimePickerBuilder
 import com.xuexiang.xui.widget.picker.widget.listener.OnTimeSelectListener
 import com.xuexiang.xutil.data.DateUtils
 import kotlinx.android.synthetic.main.activity_perfect_info.*
-import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 import org.json.JSONObject
@@ -151,16 +150,15 @@ class PerfectInfoActivity : BaseActivity<BaseViewModel>() {
     }
 
     private fun doPerfectAction() {
-        val name = userNameEt.checkBlank("企业名称不能为空") ?: return
-        val code = realName.checkBlank("统一社会信用代码不能为空") ?: return
-        val faren = phoneEt.checkBlank("法定代表人不能为空") ?: return
-        val type = emailEt.checkBlank("公司类型不能为空") ?: return
-        val term = idcardEt.checkBlank("经营范围不能为空") ?: return
-        val time = pwdEt.checkBlank("经营期限不能为空") ?: return
-        val money = repeatpwdEt.checkBlank("注册资金不能为空") ?: return
-        val address = repeatpwdEt.checkBlank("公司地址不能为空") ?: return
-        val setupdate = repeatpwdEt.checkBlank("成立日期不能为空") ?: return
-        val licenseImg = repeatpwdEt.checkBlank("营业执照不能为空") ?: return
+        val name = companyNameEt.checkBlank("企业名称不能为空") ?: return
+        val code = socialCodeEt.checkBlank("统一社会信用代码不能为空") ?: return
+        val faren = legalpersonEt.checkBlank("法定代表人不能为空") ?: return
+        val type = typeEt.checkBlank("公司类型不能为空") ?: return
+        val term = bussnissnatureEt.checkBlank("经营范围不能为空") ?: return
+        val time = bussnisstermEt.checkBlank("经营期限不能为空") ?: return
+        val money = bussnisscapitalEt.checkBlank("注册资金不能为空") ?: return
+        val address = bussnissaddressEt.checkBlank("公司地址不能为空") ?: return
+        val setupdate = bussnisstimeEt.checkBlank("成立日期不能为空") ?: return
         var reqVo = JSONObject()
         reqVo.put("enterpriseName", name)
         reqVo.put("address", address)

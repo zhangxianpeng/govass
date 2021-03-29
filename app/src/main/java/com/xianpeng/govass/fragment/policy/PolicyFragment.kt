@@ -10,16 +10,19 @@ import com.androidnetworking.interfaces.ParsedRequestListener
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
-import com.scwang.smart.refresh.layout.api.RefreshLayout
-import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener
-import com.scwang.smart.refresh.layout.listener.OnRefreshListener
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.App
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.GET_POLICY_LIST
+import com.xianpeng.govass.Constants.Companion.NORMAL_MSG_PAGE
 import com.xianpeng.govass.R
+import com.xianpeng.govass.activity.common.CommonListActivity
 import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
 import com.xianpeng.govass.base.BaseFragment
+import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
@@ -36,12 +39,22 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
     override fun layoutId(): Int = R.layout.fragment_policy
 
     override fun initView(savedInstanceState: Bundle?) {
-        BadgeView(context).bindTarget(titlebar).badgeNumber = CacheUtil.getUnReadCount()!!.toInt()
+        getUnReadMsgCountAndShow()
         titlebar.setTitle("政策文件库")
         titlebar.setLeftVisible(false)
-        titlebar.addAction(msgAction)
-        smartfreshlayout.setOnRefreshListener(this)
-        smartfreshlayout.setOnLoadMoreListener(this)
+        titlebar.addAction(object : TitleBar.Action {
+            override fun leftPadding(): Int = 0
+            override fun performAction(view: View?) {
+                startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam",
+                    NORMAL_MSG_PAGE))
+            }
+
+            override fun rightPadding(): Int = 0
+            override fun getText(): String = ""
+            override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
+        })
+        refreshLayout.setOnRefreshListener(this)
+        refreshLayout.setOnLoadMoreListener(this)
         initAdapter()
         initPageData(page, true)
     }
@@ -62,21 +75,12 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
                 Intent(
                     activity,
                     DetailInfoActivity::class.java
-                ).putExtra("policyId", data[position].id).putExtra("pageParam",
+                ).putExtra("policyId", data[position].id).putExtra(
+                    "pageParam",
                     Constants.POLICY_PAGE
                 )
             )
         })
-    }
-
-    object msgAction : TitleBar.Action {
-        override fun leftPadding(): Int = 0
-        override fun performAction(view: View?) {
-        }
-
-        override fun rightPadding(): Int = 0
-        override fun getText(): String = ""
-        override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
     }
 
     private fun initPageData(page: Int, isClearData: Boolean) {
@@ -95,7 +99,7 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
                     }
                     var result = response.data
                     if (isClearData) {
-                        data.clear();
+                        data.clear()
                     }
                     data.addAll(result?.list!!)
                     if (policyAdapter != null) policyAdapter!!.notifyDataSetChanged()
@@ -109,14 +113,44 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
         initPageData(1, true)
-        smartfreshlayout.finishRefresh()
+        refreshLayout.finishRefresh()
     }
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         page += 1
         initPageData(page, false)
-        smartfreshlayout.finishLoadMore()
+        refreshLayout.finishLoadMore()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden){
+            getUnReadMsgCountAndShow()
+        }
+    }
+
+    private fun getUnReadMsgCountAndShow() {
+        AndroidNetworking.get(Constants.GET_UNREADMSG_COUNT)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build()
+            .getAsObject(BaseResponse::class.java, object :
+                ParsedRequestListener<BaseResponse> {
+                override fun onResponse(response: BaseResponse?) {
+                    if (response == null) {
+                        toastError("获取未读消息数失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    BadgeView(context).bindTarget(titlebar).badgeNumber = response.data!!.toInt()
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError("获取未读消息数失败，请稍后再试，msg=" + anError!!.errorDetail)
+                }
+            })
+    }
 }
 

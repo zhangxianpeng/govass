@@ -23,43 +23,43 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
         mobile.setRightString(CacheUtil.getUser()?.mobile)
 
         var enterCard = CacheUtil.getUser()?.identityCard
-        identityCard.visible(if (enterCard == null || enterCard!!.isEmpty()) false else true)
+        identityCard.visible(!(enterCard == null || enterCard!!.isEmpty()))
         identityCard.setRightString(enterCard)
 
         var enterName = CacheUtil.getUser()?.enterpriseEntity?.enterpriseName
-        enterpriseName.visible(if (enterName == null || enterName!!.isEmpty()) false else true)
+        enterpriseName.visible(!(enterName == null || enterName!!.isEmpty()))
         enterpriseName.setRightString(enterName)
 
         var enterCode = CacheUtil.getUser()?.enterpriseEntity?.enterpriseCode
-        enterpriseCode.visible(if (enterCode == null || enterCode!!.isEmpty()) false else true)
+        enterpriseCode.visible(!(enterCode == null || enterCode!!.isEmpty()))
         enterpriseCode.setRightString(enterCode)
 
         var enterLegal = CacheUtil.getUser()?.enterpriseEntity?.legalRepresentative
-        legalRepresentative.visible(if (enterLegal == null || enterLegal!!.isEmpty()) false else true)
+        legalRepresentative.visible(!(enterLegal == null || enterLegal!!.isEmpty()))
         legalRepresentative.setRightString(enterLegal)
 
         var enterType = CacheUtil.getUser()?.enterpriseEntity?.businessType
-        businessType.visible(if (enterType == null || enterType!!.isEmpty()) false else true)
+        businessType.visible(!(enterType == null || enterType!!.isEmpty()))
         businessType.setRightString(enterType)
 
         var enterCapital = CacheUtil.getUser()?.enterpriseEntity?.registeredCapital
-        registeredCapital.visible(if (enterCapital == null || enterCapital!!.isEmpty()) false else true)
+        registeredCapital.visible(!(enterCapital == null || enterCapital!!.isEmpty()))
         registeredCapital.setRightString(enterCapital)
 
         var enterScope = CacheUtil.getUser()?.enterpriseEntity?.businessScope
-        businessScope.visible(if (enterScope == null || enterScope!!.isEmpty()) false else true)
+        businessScope.visible(!(enterScope == null || enterScope!!.isEmpty()))
         businessScope.setRightString(enterScope)
 
         var enterDate = CacheUtil.getUser()?.enterpriseEntity?.setUpDate
-        setUpDate.visible(if (enterDate == null || enterDate!!.isEmpty()) false else true)
+        setUpDate.visible(!(enterDate == null || enterDate!!.isEmpty()))
         setUpDate.setRightString(enterDate)
 
         var enterTerm = CacheUtil.getUser()?.enterpriseEntity?.businessTerm
-        businessTerm.visible(if (enterTerm == null || enterTerm!!.isEmpty()) false else true)
+        businessTerm.visible(!(enterTerm == null || enterTerm!!.isEmpty()))
         businessTerm.setRightString(enterTerm)
 
         var enterAddress = CacheUtil.getUser()?.enterpriseEntity?.address
-        address.visible(if (enterAddress == null || enterAddress!!.isEmpty()) false else true)
+        address.visible(!(enterAddress == null || enterAddress!!.isEmpty()))
         address.setRightString(enterAddress)
     }
 }

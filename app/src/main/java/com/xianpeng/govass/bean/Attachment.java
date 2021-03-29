@@ -25,6 +25,7 @@ public class Attachment implements Serializable {
     private String url;
     private int id;
     private int policyId;
+    private int projectId;
 
     public String getFileName() {
         return fileName;
@@ -72,5 +73,13 @@ public class Attachment implements Serializable {
 
     public void setPolicyId(int policyId) {
         this.policyId = policyId;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
 }

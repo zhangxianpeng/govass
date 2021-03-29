@@ -17,7 +17,6 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
-import kotlinx.android.synthetic.main.activity_login.*
 import org.apache.commons.lang3.StringEscapeUtils
 
 /**
@@ -176,6 +175,10 @@ fun TextView.checkBlank(message: String): String? {
     return text
 }
 
+fun <T> checkNull(t: T): Boolean? {
+    return t == null
+}
+
 fun WebView.loadRichText(str: String) {
     loadDataWithBaseURL(
         null,
@@ -186,7 +189,7 @@ fun WebView.loadRichText(str: String) {
     )
 }
 
-fun glidePicToImg(str: String,iv:ImageView) {
+fun glidePicToImg(str: String, iv: ImageView) {
     Glide.with(appContext).load(FILE_SERVER + str).placeholder(R.mipmap.ic_launcher)
         .error(R.mipmap.ic_launcher)
         .into(iv)

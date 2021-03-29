@@ -1,7 +1,7 @@
 package com.xianpeng.govass.bean
 
 data class GarbageData(
-    var code: Int = 0,
+    var code: Int = -1,
     var msg: String = "",
     var newslist: List<DetailInfo> = listOf()
 ) {

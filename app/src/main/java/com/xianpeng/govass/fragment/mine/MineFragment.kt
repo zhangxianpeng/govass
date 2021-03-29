@@ -3,12 +3,21 @@ package com.xianpeng.govass.fragment.mine
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.error.ANError
+import com.androidnetworking.interfaces.ParsedRequestListener
+import com.tencent.mmkv.MMKV
+import com.xianpeng.govass.Constants
+import com.xianpeng.govass.Constants.Companion.NORMAL_MSG_PAGE
 import com.xianpeng.govass.R
+import com.xianpeng.govass.activity.common.CommonListActivity
 import com.xianpeng.govass.activity.login.LoginActivity
 import com.xianpeng.govass.activity.updatepwd.UpdatePwdActivity
 import com.xianpeng.govass.activity.userinfo.UserInfoActivity
 import com.xianpeng.govass.base.BaseFragment
+import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.ext.showMessage
+import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.textview.badge.BadgeView
@@ -20,10 +29,24 @@ class MineFragment : BaseFragment<BaseViewModel>() {
     override fun layoutId(): Int = R.layout.fragment_mine
 
     override fun initView(savedInstanceState: Bundle?) {
-        BadgeView(context).bindTarget(titlebar).badgeNumber = CacheUtil.getUnReadCount()!!.toInt()
+        getUnReadMsgCountAndShow()
         titlebar.setTitle("个人中心")
         titlebar.setLeftVisible(false)
-        titlebar.addAction(msgAction)
+        titlebar.addAction(object : TitleBar.Action {
+            override fun leftPadding(): Int = 0
+            override fun performAction(view: View?) {
+                startActivity(
+                    Intent(activity, CommonListActivity::class.java).putExtra(
+                        "pageParam",
+                        NORMAL_MSG_PAGE
+                    )
+                )
+            }
+
+            override fun rightPadding(): Int = 0
+            override fun getText(): String = ""
+            override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
+        })
         account.setLeftString(CacheUtil.getUser()?.realname)
 
         account.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
@@ -49,15 +72,35 @@ class MineFragment : BaseFragment<BaseViewModel>() {
         }
     }
 
-    object msgAction : TitleBar.Action {
-        override fun leftPadding(): Int = 0
-        override fun performAction(view: View?) {
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            getUnReadMsgCountAndShow()
         }
+    }
 
-        override fun rightPadding(): Int = 0
-        override fun getText(): String = ""
-        override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
+    private fun getUnReadMsgCountAndShow() {
+        AndroidNetworking.get(Constants.GET_UNREADMSG_COUNT)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build()
+            .getAsObject(BaseResponse::class.java, object :
+                ParsedRequestListener<BaseResponse> {
+                override fun onResponse(response: BaseResponse?) {
+                    if (response == null) {
+                        toastError("获取未读消息数失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    BadgeView(context).bindTarget(titlebar).badgeNumber = response.data!!.toInt()
+                }
 
+                override fun onError(anError: ANError?) {
+                    toastError("获取未读消息数失败，请稍后再试，msg=" + anError!!.errorDetail)
+                }
+            })
     }
 }
 

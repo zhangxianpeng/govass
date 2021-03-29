@@ -10,5 +10,12 @@
 
     <include layout="@layout/layout_attachment" />
 
-    <include layout="@layout/layout_rich_text" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/layout_rich_text" />
+
+        <include layout="@layout/layout_wraptext_view" />
+    </FrameLayout>
 </LinearLayout>

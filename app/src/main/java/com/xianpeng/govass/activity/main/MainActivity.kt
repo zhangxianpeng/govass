@@ -4,16 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
-import com.androidnetworking.AndroidNetworking
-import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.ParsedRequestListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.gyf.immersionbar.ImmersionBar
-import com.tencent.mmkv.MMKV
-import com.xianpeng.govass.Constants
 import com.xianpeng.govass.R
 import com.xianpeng.govass.base.BaseActivity
-import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastNormal
 import com.xianpeng.govass.ext.visible
 import com.xianpeng.govass.fragment.dyment.DymentFragment
@@ -24,7 +17,6 @@ import com.xianpeng.govass.fragment.working.WorkingFragment
 import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
-import org.json.JSONObject
 
 class MainActivity : BaseActivity<BaseViewModel>(),
     BottomNavigationView.OnNavigationItemSelectedListener {
@@ -33,7 +25,8 @@ class MainActivity : BaseActivity<BaseViewModel>(),
      */
     private var lastBackPressTime = -1L
 
-    private var supportFragmentTag = arrayOf(WORKING_TAG, DYMENT_TAG, MAILIST_TAG, POLICY_TAG, MINE_TAG)
+    private var supportFragmentTag =
+        arrayOf(WORKING_TAG, DYMENT_TAG, MAILIST_TAG, POLICY_TAG, MINE_TAG)
     private var lastFragmentTag = ""
 
     override fun layoutId(): Int = R.layout.activity_main

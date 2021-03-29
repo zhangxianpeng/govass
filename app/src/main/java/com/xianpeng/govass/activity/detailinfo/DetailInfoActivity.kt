@@ -19,18 +19,24 @@ import com.just.agentweb.WebViewClient
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.App
 import com.xianpeng.govass.Constants.Companion.BANNER_PAGE
+import com.xianpeng.govass.Constants.Companion.GET_NORMAL_MSG_ATTACHMENT
 import com.xianpeng.govass.Constants.Companion.GET_POLICY_DETAIL
+import com.xianpeng.govass.Constants.Companion.NORMAL_MSG_PAGE
 import com.xianpeng.govass.Constants.Companion.POLICY_PAGE
+import com.xianpeng.govass.Constants.Companion.POST_READ_NORMAL_MSG
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.common.CommonActivity
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.bean.Attachment
 import com.xianpeng.govass.ext.loadRichText
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.ext.toastSuccess
 import com.xianpeng.govass.ext.visible
+import com.xianpeng.govass.util.CacheUtil
 import com.xianpeng.govass.widget.WebLayout
 import kotlinx.android.synthetic.main.layout_attachment.*
 import kotlinx.android.synthetic.main.layout_rich_text.*
+import kotlinx.android.synthetic.main.layout_wraptext_view.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 import java.util.*
@@ -47,16 +53,16 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
     override fun initView(savedInstanceState: Bundle?) {
         titlebar.setLeftClickListener { finish() }
         initAttachmentAdapter()
-        var pageParam = intent.getStringExtra("pageParam")
+        val pageParam = intent.getStringExtra("pageParam")
         when (pageParam) {
             BANNER_PAGE -> {
                 cardview.visible(false)
-                var bannerContent = intent.getStringExtra("bannerContent")
-                var contentType = (bannerContent.split(",")[0]).substring(0, 1)
-                var title = (bannerContent.split(",")[0]).substring(1)
-                var content = bannerContent.split(",")[1]
+                val bannerContent: String = intent.getStringExtra("bannerContent")
+                val contentType: String = (bannerContent.split(",")[0]).substring(0, 1)
+                val title: String = (bannerContent.split(",")[0]).substring(1)
+                val content: String = bannerContent.substring(title.length + 2)
                 titlebar.setTitle(title)
-                if (contentType.equals("0")) {  //富文本
+                if (contentType == "0") {  //富文本
                     richtest_webview.loadRichText(content)
                 } else {
                     richtest_webview.visible(false)
@@ -66,6 +72,14 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
             POLICY_PAGE -> {
                 var policyId = intent.getIntExtra("policyId", -1)
                 getPolicyDetail(policyId)
+            }
+            NORMAL_MSG_PAGE -> {
+                richtest_webview.visible(false)
+                val msgId = intent.getIntExtra("msgId", -1)
+                val attachmentId = intent.getIntExtra("primaryId", -1)
+                val readFlag = intent.getIntExtra("readFlag", -1)
+                postMsgDetail(msgId, readFlag)
+                getMsgAttachmentDetail(attachmentId)
             }
         }
     }
@@ -80,24 +94,12 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
         rv_attachment!!.layoutManager = LinearLayoutManager(App.instance)
         rv_attachment!!.adapter = attachmentAdapter
         attachmentAdapter!!.setOnItemClickListener { _, _, position ->
-            var attachment = data[position]
             startActivity(
-                Intent(
-                    this,
-                    CommonActivity::class.java
-                ).putExtra("fileItem", data[position])
+                Intent(this, CommonActivity::class.java).putExtra(
+                    "fileItem",
+                    data[position]
+                )
             )
-            var fileName = attachment.name
-
-//            if (fileName.endsWith("PNG") ||
-//                fileName.endsWith("JPG") ||
-//                fileName.endsWith("JEPG") ||
-//                fileName.endsWith("png") ||
-//                fileName.endsWith("jpg") ||
-//                fileName.endsWith("jepg")
-//            ) {
-//
-//            }
         }
     }
 
@@ -118,6 +120,72 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
                     titlebar.setTitle(response.data?.title)
                     richtest_webview.loadRichText(response.data?.content!!)
                     data.addAll(response.data?.attachmentList!!)
+                    if (data.size < 1) {
+                        cardview.visible(false)
+                    } else {
+                        cardview.visible(true)
+                    }
+                    if (attachmentAdapter != null) attachmentAdapter!!.notifyDataSetChanged()
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError(anError!!.errorDetail)
+                }
+            })
+    }
+
+    private fun postMsgDetail(msgId: Int, readFlag: Int) {
+        AndroidNetworking.post(POST_READ_NORMAL_MSG + msgId)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build().getAsObject(MsgItemBase::class.java, object :
+                ParsedRequestListener<MsgItemBase> {
+                override fun onResponse(response: MsgItemBase?) {
+                    if (response == null) {
+                        toastError("读取消息失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    titlebar.setTitle(response.data?.title)
+                    wrapTextView.text = response.data?.content
+                    if (readFlag == 0) {
+                        toastSuccess("本条消息已读")
+                    }
+                    if (CacheUtil.getUnReadCount()!!.toInt() > 1) {
+                        CacheUtil.setUnReadCount(
+                            (CacheUtil.getUnReadCount()!!.toInt() - 1).toString()
+                        )
+                    }
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError(anError!!.errorDetail)
+                }
+            })
+    }
+
+    private fun getMsgAttachmentDetail(attachmentId: Int) {
+        AndroidNetworking.get(GET_NORMAL_MSG_ATTACHMENT + attachmentId)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build().getAsObject(MsgAttachmentItemBase::class.java, object :
+                ParsedRequestListener<MsgAttachmentItemBase> {
+                override fun onResponse(response: MsgAttachmentItemBase?) {
+                    if (response == null) {
+                        toastError("获取消息附件失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    data.addAll(response.data!!)
+                    if (data.size < 1) {
+                        rv_attachment.visible(false)
+                    } else {
+                        rv_attachment.visible(true)
+                    }
                     if (attachmentAdapter != null) attachmentAdapter!!.notifyDataSetChanged()
                 }
 

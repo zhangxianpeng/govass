@@ -51,6 +51,7 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
                     return
                 }
                 var file: MutableList<File> = ArrayList()
+                attachment = declareInfoPhotoLayout.data
                 if (attachment!!.isNotEmpty()) {
                     showLoading("图片上传中...")
                     for (i in 0 until attachment!!.size) {
@@ -189,7 +190,7 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
                 if (it) {
                     // 拍照后照片的存放目录，改成你自己拍照后要存放照片的目录。如果不传递该参数的话就没有拍照功能
                     val takePhotoDir =
-                        File(Environment.getExternalStorageDirectory(), "garbagesort")
+                        File(Environment.getExternalStorageDirectory(), "govassRebuild")
                     val photoPickerIntent = BGAPhotoPickerActivity.IntentBuilder(this)
                         .cameraFileDir(takePhotoDir) // 拍照后照片的存放目录，改成你自己拍照后要存放照片的目录。如果不传递该参数的话则不开启图库里的拍照功能
                         .maxChooseCount(declareInfoPhotoLayout.maxItemCount - declareInfoPhotoLayout.itemCount) // 图片选择张数的最大值
@@ -206,7 +207,6 @@ class SendDymentActivity : BaseActivity<BaseViewModel>(), BGASortableNinePhotoLa
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == RC_CHOOSE_PHOTO) {
-            attachment = BGAPhotoPickerActivity.getSelectedPhotos(data)
             declareInfoPhotoLayout?.addMoreData(BGAPhotoPickerActivity.getSelectedPhotos(data))
         } else if (requestCode == RC_PHOTO_PREVIEW) {
             declareInfoPhotoLayout?.data = BGAPhotoPickerPreviewActivity.getSelectedPhotos(data)

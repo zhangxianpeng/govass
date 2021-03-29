@@ -28,7 +28,7 @@ class App : BaseApp() {
         XUI.init(this)
         XUI.debug(true)
         AndroidNetworking.initialize(this)
-//        AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY)
+        AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY)
         TbsInit.init(this)
     }
 }
