@@ -104,5 +104,14 @@ class Constants {
 
         //全局搜索
         const val GET_GLOBAL_SEARCH_RESULT = BASE_IP + "/govass/sys/common-search/list?page=1&limit=100&query="
+
+        //全部政府用户
+        const val GET_ALL_GOVERMENT_USER = BASE_IP + "/govass/sys/user/listAllGovernment"
+
+        //全部企业用户
+        const val GET_ALL_ENTERPRISE_USER = BASE_IP + "/govass/sys/enterpriseuser/listAllEnterprise"
+
+        //全部分组
+        const val GET_ALL_GROUP = BASE_IP + "/govass/sys/group/list"
     }
 }

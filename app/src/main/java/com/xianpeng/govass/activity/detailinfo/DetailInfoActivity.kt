@@ -182,9 +182,9 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
                     }
                     data.addAll(response.data!!)
                     if (data.size < 1) {
-                        rv_attachment.visible(false)
+                        cardview.visible(false)
                     } else {
-                        rv_attachment.visible(true)
+                        cardview.visible(true)
                     }
                     if (attachmentAdapter != null) attachmentAdapter!!.notifyDataSetChanged()
                 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="?attr/xui_config_content_spacing_horizontal"
+    android:orientation="vertical">
+
+    <com.xuexiang.xui.widget.edittext.ClearEditText
+        android:id="@+id/group_name"
+        style="@style/EditText.Normal"
+        android:layout_width="200dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:singleLine="true"
+        android:hint="请输入分组名"
+        app:cet_clearIcon="@drawable/icon_clear"
+        app:cet_clearIconSize="@dimen/default_clear_icon_size" />
+
+    <com.xuexiang.xui.widget.edittext.ClearEditText
+        android:id="@+id/group_remark"
+        style="@style/EditText.Normal"
+        android:layout_width="200dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:singleLine="true"
+        android:hint="请输入分组备注"
+        app:cet_clearIcon="@drawable/icon_clear"
+        app:cet_clearIconSize="@dimen/default_clear_icon_size" />
+</LinearLayout>

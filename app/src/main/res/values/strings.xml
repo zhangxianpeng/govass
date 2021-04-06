@@ -47,8 +47,6 @@
     <string name="issued_documents">已发公文</string>
     <string name="completed">已填报</string>
     <string name="not_filled_in">未填报</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="declare_detail_title">申报详情</string>
     <string name="project_name">申报项目名称</string>
     <string name="project_type">申报类别</string>
@@ -150,7 +148,6 @@
     <string name="dynamic_send_history">发布历史</string>
     <string name="add_feed_back">新增反馈</string>
     <string name="check_more">查看更多(%1$s)</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_govass_main">MainActivity</string>
     <string name="title_activity_govass_navi">MainActivity</string>

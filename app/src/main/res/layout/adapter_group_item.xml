@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_40">
+
+    <ImageView
+        android:id="@+id/iv_left"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/down" />
+
+    <TextView
+        android:id="@+id/tv_group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="11dp"
+        android:layout_toRightOf="@+id/iv_left"
+        android:text="某某2组"
+        android:textColor="#ff303030"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingRight="10dp"
+        android:text="@string/manage"
+        android:textColor="#ff5379a0"
+        android:textSize="14sp" />
+</RelativeLayout>

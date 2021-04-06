@@ -17,6 +17,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
+import de.hdodenhof.circleimageview.CircleImageView
 import org.apache.commons.lang3.StringEscapeUtils
 
 /**
@@ -193,4 +194,10 @@ fun glidePicToImg(str: String, iv: ImageView) {
     Glide.with(appContext).load(FILE_SERVER + str).placeholder(R.mipmap.ic_launcher)
         .error(R.mipmap.ic_launcher)
         .into(iv)
+}
+
+fun glidePicToCircleImg(str: String, circleImageView: CircleImageView) {
+    Glide.with(appContext).load(FILE_SERVER + str).placeholder(R.drawable.default_tx_img)
+        .error(R.drawable.default_tx_img)
+        .into(circleImageView)
 }

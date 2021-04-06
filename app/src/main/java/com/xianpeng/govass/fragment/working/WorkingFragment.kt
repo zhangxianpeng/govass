@@ -28,10 +28,12 @@ import com.xianpeng.govass.Constants.Companion.SYSTEM_NOTICE_PAGE
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.common.CommonListActivity
 import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
+import com.xianpeng.govass.activity.login.LoginActivity
 import com.xianpeng.govass.adapter.RecyclerViewBannerAdapter
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.banner.recycler.BannerLayout
 import com.xuexiang.xui.widget.banner.widget.banner.BannerItem
@@ -140,9 +142,13 @@ class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, O
                     }
                     if (response.code != 0) {
                         toastError(response.msg)
-                        return
+                        if (response.msg == "token失效，请重新登录") {
+                            CacheUtil.clearUserInfo()
+                            activity!!.finish()
+                            startActivity(Intent(activity, LoginActivity::class.java))
+                        }
                     }
-                    mBannerOriginalData.addAll(response.data!!)
+                    mBannerOriginalData.addAll(response.data)
                     mBannerData = transData(mBannerOriginalData)
                     ad_banner.setSource(mBannerData)
                         .setOnItemClickListener { view: View?, t: BannerItem?, position: Int ->

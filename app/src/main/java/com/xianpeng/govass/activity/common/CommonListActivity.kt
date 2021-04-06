@@ -152,11 +152,12 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 holder.setText(R.id.tv_declare_result, item.title)
                 holder.setText(R.id.tv_declare_time, item.createTime)
                 holder.setText(R.id.tv_declare_msg, item.content)
+                holder.setGone(R.id.tv_declare_status, item.readFlag == 1)
                 holder.setBackgroundResource(
                     R.id.tv_declare_status,
                     if (item.readFlag == 0) R.drawable.circle_shape_fail else R.drawable.circle_shape_success
                 )
-                holder.setGone(R.id.tv_declare_status, item.readFlag == 1)
+
             }
         }
         recycleview!!.layoutManager = LinearLayoutManager(App.instance)
