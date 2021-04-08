@@ -30,7 +30,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.feedback.FeedBackDetailActivity"></activity>
+        <activity android:name=".activity.mailistmanager.MailistManagerActivity"></activity>
+        <activity android:name=".activity.feedback.FeedBackDetailActivity" />
         <activity android:name=".activity.projectdeclare.ProjectDeclareActivity" />
         <activity
             android:name=".activity.common.CommonListActivity"

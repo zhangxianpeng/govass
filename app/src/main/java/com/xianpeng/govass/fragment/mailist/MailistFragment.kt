@@ -2,45 +2,57 @@ package com.xianpeng.govass.fragment.mailist
 
 import android.content.Intent
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ExpandableListView
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupWindow
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.R
+import com.xianpeng.govass.activity.mailistmanager.MailistManagerActivity
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.visible
+import com.xuexiang.xui.widget.button.ButtonView
 import com.xuexiang.xui.widget.dialog.bottomsheet.BottomSheet
 import com.xuexiang.xui.widget.dialog.bottomsheet.BottomSheet.BottomListSheetBuilder
-import com.xuexiang.xui.widget.dialog.materialdialog.DialogAction
 import com.xuexiang.xui.widget.dialog.materialdialog.MaterialDialog
+import com.xuexiang.xui.widget.edittext.ClearEditText
 import kotlinx.android.synthetic.main.fragment_mailist.*
 import kotlinx.android.synthetic.main.tab_title_layout.*
-import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+
 
 /**
  * @description: 通讯录
+ * @author: zhangxianpeng
+ * @time:2021/04/08
  */
-class MailistFragment : BaseFragment<BaseViewModel>() {
+class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissListener {
 
     private var groupArray: MutableList<GroupRes.GroupDataList.GroupData> = ArrayList()
     private var childArray: MutableList<ArrayList<ChildRes.UserInfo>> = ArrayList()
     private var userAdapter: ExpandableAdapter? = null
 
     private var isGetGoverMentUser = true
-
+    private var sendMsgPop: PopupWindow? = null
     override fun layoutId(): Int = R.layout.fragment_mailist
 
     override fun initView(savedInstanceState: Bundle?) {
         leftTabTv.setText("政府用户")
         rightTabTv.setText("企业用户")
-        historyIv.visible(false)
+        historyIv.visible(true)
+        historyIv.setImageDrawable(resources.getDrawable(R.drawable.ic_search_white_24dp))
+        historyIv.setOnClickListener { // TODO: 2021/4/8  搜索用户
+        }
 
         //政府用户点击
         ll_left.setOnClickListener {
@@ -67,14 +79,22 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
             right_indicator.visible(true)
         }
         tv_send_msg.setOnClickListener {
-            showBottomSheetListDialog(true,isGetGoverMentUser)
+            showBottomSheetListDialog(true, isGetGoverMentUser, -1)
         }
         addIv.setOnClickListener {
             MaterialDialog.Builder(requireActivity())
                 .customView(R.layout.dialog_custom, true)
                 .title("新增分组")
                 .positiveText("确定")
-                .onPositive { dialog, which -> TODO("新增分组") }
+                .onPositive { dialog, which ->
+                    var newGroup = AddGroupReqVo()
+                    newGroup.type = if (isGetGoverMentUser) 0 else 1
+                    newGroup.name =
+                        dialog.findViewById<ClearEditText>(R.id.group_name).text.toString()
+                    newGroup.remark =
+                        dialog.findViewById<ClearEditText>(R.id.group_remark).text.toString()
+                    mViewModel.addGroup(newGroup)
+                }
                 .negativeText("取消")
                 .show()
         }
@@ -122,7 +142,7 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
             override fun onElementClick(id: Int, elementId: Int) {
                 when (elementId) {
                     R.id.tv_msg -> {
-                        showBottomSheetListDialog(false,isGetGoverMentUser)
+                        showBottomSheetListDialog(false, isGetGoverMentUser, elementId)
                     }
                     R.id.tv_delete -> {
                         showMessage("确定将此用户从当前分组中移除吗？", positiveAction = {
@@ -135,7 +155,8 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
 
         user_listView.setOnChildClickListener { _, _, p2, p3, _ ->
             val contract = childArray[p2][p3].mobile
-            showMessage("拨打：$contract", positiveAction = {
+            val contractName = childArray[p2][p3].realname
+            showMessage("拨打：$contractName-$contract", positiveAction = {
                 val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$contract"))
                 startActivity(dialIntent)
             }, negativeButtonText = "取消")
@@ -146,7 +167,11 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
     /**
      * 底部弹出框
      */
-    private fun showBottomSheetListDialog(isTiltleClick: Boolean,isGetGoverMentUser: Boolean) {
+    private fun showBottomSheetListDialog(
+        isTiltleClick: Boolean,
+        isGetGoverMentUser: Boolean,
+        groupId: Int
+    ) {
         if (isTiltleClick) {
             BottomListSheetBuilder(activity)
                 .addItem("全员消息")
@@ -155,7 +180,27 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
                 .setIsCenter(true)
                 .setOnSheetItemClickListener { dialog: BottomSheet, itemView: View?, position: Int, tag: String? ->
                     dialog.dismiss()
-//                    XToastUtils.toast("Item " + (position + 1))
+                    when (position) {
+                        0 -> {
+                            showSendAllMsgPop()
+                        }
+                        1 -> {
+                            startActivity(
+                                Intent(
+                                    requireActivity(),
+                                    MailistManagerActivity::class.java
+                                ).putExtra("groupId", groupId).putExtra("itemPosition", position)
+                            )
+                        }
+                        2 -> {
+                            startActivity(
+                                Intent(
+                                    requireActivity(),
+                                    MailistManagerActivity::class.java
+                                ).putExtra("groupId", groupId).putExtra("itemPosition", position)
+                            )
+                        }
+                    }
                 }
                 .build()
                 .show()
@@ -177,10 +222,53 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
         }
     }
 
-    private fun deleteUserFromCurrentGroup(id: Int) {
-
+    private fun showSendAllMsgPop() {
+        val contentView: View =
+            LayoutInflater.from(activity).inflate(R.layout.layout_bottom_dialog, null)
+        initsendMsgPopView(contentView)
+        val height = resources.getDimension(R.dimen.dp350).toInt()
+        sendMsgPop = PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT, height, true)
+        sendMsgPop!!.animationStyle = R.style.ActionSheetDialogAnimation
+        sendMsgPop!!.isOutsideTouchable = true
+        backgroundAlpha(0.3f)
+        sendMsgPop!!.setOnDismissListener(this)
+        sendMsgPop!!.setBackgroundDrawable(BitmapDrawable())
+        sendMsgPop!!.showAtLocation(rootView, Gravity.BOTTOM, 0, 0)
     }
 
+    private fun initsendMsgPopView(contentView: View) {
+        contentView.findViewById<ImageView>(R.id.iv_close)
+            .setOnClickListener { sendMsgPop!!.dismiss() }
+        contentView.findViewById<ButtonView>(R.id.sendBtn)
+            .setOnClickListener {
+                var allUserMsgReqVo = NewPlainMsgReqVo()
+                allUserMsgReqVo.title =
+                    contentView.findViewById<ClearEditText>(R.id.et_title).text.toString()
+                allUserMsgReqVo.content =
+                    contentView.findViewById<ClearEditText>(R.id.et_text).text.toString()
+                allUserMsgReqVo.receiverType = 0
+                allUserMsgReqVo.userType = if (isGetGoverMentUser) 0 else 1
+                mViewModel.sendAllUserMsg(allUserMsgReqVo)
+            }
+    }
+
+    private fun backgroundAlpha(bgAlpha: Float) {
+        val lp = requireActivity().window.attributes
+        lp.alpha = bgAlpha
+        requireActivity().window.attributes = lp
+    }
+
+    override fun onDismiss() {
+        backgroundAlpha(1.0f);
+        if (sendMsgPop != null) {
+            sendMsgPop!!.dismiss()
+        }
+    }
+
+    //----------------接口 start ------------------//
+    /**
+     * 获取分组列表
+     */
     private fun getGroupList() {
         AndroidNetworking.get(Constants.GET_ALL_GROUP)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
@@ -216,6 +304,9 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
             })
     }
 
+    /**
+     * 获取全部政府人员
+     */
     private fun getAllGoverMentUser() {
         AndroidNetworking.get(Constants.GET_ALL_GOVERMENT_USER)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
@@ -242,6 +333,9 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
             })
     }
 
+    /**
+     * 获取全部企业用户
+     */
     private fun getAllEnterpriseUser() {
         AndroidNetworking.get(Constants.GET_ALL_ENTERPRISE_USER)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
@@ -270,6 +364,9 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
             })
     }
 
+    /**
+     * 根据分组id获取分组成员
+     */
     private fun getGoverMentUserByGroupId(groupId: Int, groupPosition: Int) {
         AndroidNetworking.get(Constants.GET_ALL_GOVERMENT_USER)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
@@ -327,4 +424,14 @@ class MailistFragment : BaseFragment<BaseViewModel>() {
                 }
             })
     }
+
+    /**
+     * 从分组中删除
+     * @param id 分组id
+     */
+    private fun deleteUserFromCurrentGroup(groupId: Int) {
+
+    }
+
+
 }

@@ -16,6 +16,6 @@
     <dimen name="pull_view_width">28dp</dimen>
     <dimen name="base_margin">20dp</dimen>
     <dimen name="base_padding">16dp</dimen>
-
+    <dimen name="dp350">350dp</dimen>
     <dimen name="title_bar_height">44dp</dimen>
 </resources>

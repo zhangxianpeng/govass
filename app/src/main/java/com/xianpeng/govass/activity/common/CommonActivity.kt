@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.layout_word_view.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 
 class CommonActivity : BaseActivity<CommonViewModel>() {
+
     override fun layoutId(): Int = R.layout.activity_common
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -28,5 +29,4 @@ class CommonActivity : BaseActivity<CommonViewModel>() {
             filePath
         )
     }
-
 }

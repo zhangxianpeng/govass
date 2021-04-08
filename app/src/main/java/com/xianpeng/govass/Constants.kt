@@ -113,5 +113,12 @@ class Constants {
 
         //全部分组
         const val GET_ALL_GROUP = BASE_IP + "/govass/sys/group/list"
+
+        //新增分组
+        const val POST_ADD_GROUP = BASE_IP + "/govass/sys/group/save"
+
+        //全员消息
+        const val POST_ADD_ALL_USER_MSG = BASE_IP + "/govass/sys/plainmsg/save"
+
     }
 }

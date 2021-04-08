@@ -18,6 +18,5 @@
 
         <include layout="@layout/layout_word_view" />
 
-
     </FrameLayout>
 </LinearLayout>
