@@ -1,5 +1,6 @@
 package com.xianpeng.govass.fragment.mailist
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -15,6 +16,8 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.tencent.mmkv.MMKV
+import com.wyt.searchbox.SearchFragment
+import com.wyt.searchbox.custom.IOnSearchClickListener
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.mailistmanager.MailistManagerActivity
@@ -36,8 +39,9 @@ import kotlinx.android.synthetic.main.tab_title_layout.*
  * @author: zhangxianpeng
  * @time:2021/04/08
  */
-class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissListener {
-
+class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissListener,
+    IOnSearchClickListener {
+    private val searchFragment by lazy { SearchFragment.newInstance() }
     private var groupArray: MutableList<GroupRes.GroupDataList.GroupData> = ArrayList()
     private var childArray: MutableList<ArrayList<ChildRes.UserInfo>> = ArrayList()
     private var userAdapter: ExpandableAdapter? = null
@@ -46,14 +50,16 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
     private var sendMsgPop: PopupWindow? = null
     override fun layoutId(): Int = R.layout.fragment_mailist
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun initView(savedInstanceState: Bundle?) {
         leftTabTv.setText("政府用户")
         rightTabTv.setText("企业用户")
         historyIv.visible(true)
         historyIv.setImageDrawable(resources.getDrawable(R.drawable.ic_search_white_24dp))
-        historyIv.setOnClickListener { // TODO: 2021/4/8  搜索用户
+        historyIv.setOnClickListener {
+            searchFragment.showFragment(activity?.supportFragmentManager, SearchFragment.TAG)
         }
-
+        searchFragment.setOnSearchClickListener(this)
         //政府用户点击
         ll_left.setOnClickListener {
             collapseGroup()
@@ -79,33 +85,18 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
             right_indicator.visible(true)
         }
         tv_send_msg.setOnClickListener {
-            showBottomSheetListDialog(true, isGetGoverMentUser, -1)
+            showSendMsgDialog(isGetGoverMentUser)
         }
         addIv.setOnClickListener {
-            MaterialDialog.Builder(requireActivity())
-                .customView(R.layout.dialog_custom, true)
-                .title("新增分组")
-                .positiveText("确定")
-                .onPositive { dialog, which ->
-                    var newGroup = AddGroupReqVo()
-                    newGroup.type = if (isGetGoverMentUser) 0 else 1
-                    newGroup.name =
-                        dialog.findViewById<ClearEditText>(R.id.group_name).text.toString()
-                    newGroup.remark =
-                        dialog.findViewById<ClearEditText>(R.id.group_remark).text.toString()
-                    mViewModel.addGroup(newGroup)
-                }
-                .negativeText("取消")
-                .show()
+            showCenterDialog(true,-1)
         }
-
         initUserAdapter()
         showLoading()
         getGroupList()
     }
 
     private fun collapseGroup() {
-        if (userAdapter!!.groupCount !== 0) {
+        if (userAdapter!!.groupCount != 0) {
             val count: Int = userAdapter!!.groupCount
             for (i in 0 until count) {
                 user_listView.collapseGroup(i)
@@ -128,10 +119,10 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
                     if (isGetGoverMentUser) getAllGoverMentUser() else getAllEnterpriseUser()
                 } else {  //根据分组id获取联系人
                     if (isGetGoverMentUser) getGoverMentUserByGroupId(
-                        groupArray!![groupPosition].id,
+                        groupArray[groupPosition].id,
                         groupPosition
                     ) else getEnterpriseUserByGroupId(
-                        groupArray!![groupPosition].id, groupPosition
+                        groupArray[groupPosition].id, groupPosition
                     )
                 }
             }
@@ -139,11 +130,9 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
         }
 
         userAdapter!!.setOnElementClickListener(object : OnElementClickListener {
-            override fun onElementClick(id: Int, elementId: Int) {
+            override fun onElementClick(id: Int, name: String, elementId: Int) {
                 when (elementId) {
-                    R.id.tv_msg -> {
-                        showBottomSheetListDialog(false, isGetGoverMentUser, elementId)
-                    }
+                    R.id.tv_msg -> showGroupManageDialog(isGetGoverMentUser, name, id)
                     R.id.tv_delete -> {
                         showMessage("确定将此用户从当前分组中移除吗？", positiveAction = {
                             deleteUserFromCurrentGroup(id)
@@ -164,50 +153,54 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
         }
     }
 
-    /**
-     * 底部弹出框
-     */
-    private fun showBottomSheetListDialog(
-        isTiltleClick: Boolean,
-        isGetGoverMentUser: Boolean,
-        groupId: Int
-    ) {
-        if (isTiltleClick) {
-            BottomListSheetBuilder(activity)
-                .addItem("全员消息")
-                .addItem("分组消息")
-                .addItem("成员消息")
-                .setIsCenter(true)
-                .setOnSheetItemClickListener { dialog: BottomSheet, itemView: View?, position: Int, tag: String? ->
-                    dialog.dismiss()
-                    when (position) {
-                        0 -> {
-                            showSendAllMsgPop()
-                        }
-                        1 -> {
-                            startActivity(
-                                Intent(
-                                    requireActivity(),
-                                    MailistManagerActivity::class.java
-                                ).putExtra("groupId", groupId).putExtra("itemPosition", position)
-                            )
-                        }
-                        2 -> {
-                            startActivity(
-                                Intent(
-                                    requireActivity(),
-                                    MailistManagerActivity::class.java
-                                ).putExtra("groupId", groupId).putExtra("itemPosition", position)
-                            )
-                        }
-                    }
+    private fun showCenterDialog(isInsert: Boolean,groupId: Int) {
+        MaterialDialog.Builder(requireActivity())
+            .customView(R.layout.dialog_custom, true)
+            .title(if(isInsert)"新增分组" else "修改分组信息")
+            .positiveText("确定")
+            .onPositive { dialog, which ->
+                if(isInsert) { //新增
+                    var newGroup = AddGroupReqVo()
+                    newGroup.type = if (isGetGoverMentUser) 0 else 1
+                    newGroup.name = dialog.findViewById<ClearEditText>(R.id.group_name).text.toString()
+                    newGroup.remark = dialog.findViewById<ClearEditText>(R.id.group_remark).text.toString()
+                    showLoading()
+                    mViewModel.addGroup(newGroup)
+                    // TODO: 2021/4/10  不能保证数据刷新
+                    getGroupList()
+                } else { //修改
+                    var updateGroup = AddGroupReqVo()
+                    updateGroup.type = if (isGetGoverMentUser) 0 else 1
+                    updateGroup.name = dialog.findViewById<ClearEditText>(R.id.group_name).text.toString()
+                    updateGroup.remark = dialog.findViewById<ClearEditText>(R.id.group_remark).text.toString()
+                    updateGroup.id = groupId
+                    showLoading()
+                    mViewModel.updateGroup(updateGroup)
+                    getGroupList()
                 }
-                .build()
-                .show()
-        } else {
-            // TODO: 2021/4/6  传入分组id 分组名称 
+            }
+            .negativeText("取消")
+            .show()
+    }
+    
+    private fun showSendMsgDialog(isGetGoverMentUser: Boolean) {
+        BottomListSheetBuilder(activity)
+            .addItem("全员消息")
+            .addItem("分组消息")
+            .addItem("成员消息")
+            .setIsCenter(true)
+            .setOnSheetItemClickListener { dialog: BottomSheet, itemView: View?, position: Int, tag: String? ->
+                dialog.dismiss()
+                when (position) {
+                    0 ->  showSendAllMsgPop()
+                    1,2 -> startActivity(Intent(requireActivity(), MailistManagerActivity::class.java).putExtra("flagType", "plainMsg").putExtra("itemPosition", position).putExtra("isGetGoverMentUser", isGetGoverMentUser))
+                }
+            }.build().show()
+    }
+   
+    private fun showGroupManageDialog(isGetGoverMentUser: Boolean,groupName: String, groupId: Int) {
             BottomListSheetBuilder(activity)
-                .setTitle("分组名称")
+                .setTitle(groupName)
                 .addItem("移除成员")
                 .addItem("新增成员")
                 .addItem("修改分组信息")
@@ -215,11 +208,17 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
                 .setIsCenter(true)
                 .setOnSheetItemClickListener { dialog: BottomSheet, itemView: View?, position: Int, tag: String? ->
                     dialog.dismiss()
-//                    XToastUtils.toast("Item " + (position + 1))
-                }
-                .build()
-                .show()
-        }
+                    when(position) {
+                        0,1->startActivity(Intent(requireActivity(), MailistManagerActivity::class.java).putExtra("itemPosition", position).putExtra("isGetGoverMentUser", isGetGoverMentUser))
+                        2-> showCenterDialog(false,groupId)
+                        3-> showMessage("确定删除此分组吗", positiveAction = {
+                            showLoading()
+                            mViewModel.deleteGroup(groupId)
+                            getGroupList()
+                            }, negativeButtonText = "取消")
+
+                    }
+                }.build().show()
     }
 
     private fun showSendAllMsgPop() {
@@ -242,10 +241,8 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
         contentView.findViewById<ButtonView>(R.id.sendBtn)
             .setOnClickListener {
                 var allUserMsgReqVo = NewPlainMsgReqVo()
-                allUserMsgReqVo.title =
-                    contentView.findViewById<ClearEditText>(R.id.et_title).text.toString()
-                allUserMsgReqVo.content =
-                    contentView.findViewById<ClearEditText>(R.id.et_text).text.toString()
+                allUserMsgReqVo.title = contentView.findViewById<ClearEditText>(R.id.et_title).text.toString()
+                allUserMsgReqVo.content = contentView.findViewById<ClearEditText>(R.id.et_text).text.toString()
                 allUserMsgReqVo.receiverType = 0
                 allUserMsgReqVo.userType = if (isGetGoverMentUser) 0 else 1
                 mViewModel.sendAllUserMsg(allUserMsgReqVo)
@@ -433,5 +430,8 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
 
     }
 
-
+    override fun OnSearchClick(keyword: String?) {
+        // TODO: 2021/4/10 搜索用户
+    }
+    
 }

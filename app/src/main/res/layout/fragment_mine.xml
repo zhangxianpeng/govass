@@ -20,6 +20,107 @@
             app:sLeftTextString="帐号管理"
             app:sLeftViewMarginLeft="10dp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/ll_user_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/me_ic_mydata" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/personal_data"
+                    android:textColor="#ff303030"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_my_project"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/me_ic_mydeclare" />
+
+                <TextView
+                    android:id="@+id/project_declare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/project_approval"
+                    android:textColor="#ff303030"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_my_article"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/me_ic_addressee" />
+
+                <TextView
+                    android:id="@+id/my_msg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/my_post"
+                    android:textColor="#ff303030"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_my_collect"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/me_ic_collection" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/my_collect"
+                    android:textColor="#ff303030"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/tuiguang"
             style="@style/InfoItem.Account"
@@ -41,6 +142,7 @@
             app:sLeftTextString="修改密码" />
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/version"
             style="@style/InfoItem.Account"
             app:sRightTextString="1.0.1"
             app:sLeftTextString="版本信息" />

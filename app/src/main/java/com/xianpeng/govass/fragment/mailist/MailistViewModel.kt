@@ -55,15 +55,57 @@ class MailistViewModel : BaseViewModel() {
     /**
      * 删除分组
      */
-    fun deleteGroup() {
+    fun deleteGroup(grouId:Int) {
+        var idList:MutableList<Int> = ArrayList()
+        idList.add(grouId)
+        AndroidNetworking.post(Constants.POST_DELETE_GROUP)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .addApplicationJsonBody(idList)
+            .build().getAsObject(BaseResponse::class.java, object :
+                ParsedRequestListener<BaseResponse> {
+                override fun onResponse(response: BaseResponse?) {
+                    if (response == null) {
+                        toastError("删除分组失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    toastSuccess("删除分组成功")
+                }
 
+                override fun onError(anError: ANError?) {
+                    toastError(anError!!.errorDetail)
+                }
+            })
     }
 
     /**
      * 修改分组
      */
-    fun updateGroup() {
+    fun updateGroup(updateGroup: AddGroupReqVo) {
+        AndroidNetworking.post(Constants.POST_UPDATE_GROUP)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .addApplicationJsonBody(updateGroup)
+            .build().getAsObject(BaseResponse::class.java, object :
+                ParsedRequestListener<BaseResponse> {
+                override fun onResponse(response: BaseResponse?) {
+                    if (response == null) {
+                        toastError("修改分组失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg)
+                        return
+                    }
+                    toastSuccess("修改分组成功")
+                }
 
+                override fun onError(anError: ANError?) {
+                    toastError(anError!!.errorDetail)
+                }
+            })
     }
 
     /**

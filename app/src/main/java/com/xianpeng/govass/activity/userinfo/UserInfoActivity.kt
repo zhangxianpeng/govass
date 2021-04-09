@@ -1,8 +1,11 @@
 package com.xianpeng.govass.activity.userinfo
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.gyf.immersionbar.ImmersionBar
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.ext.visible
@@ -22,44 +25,70 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
         email.setRightString(CacheUtil.getUser()?.email)
         mobile.setRightString(CacheUtil.getUser()?.mobile)
 
-        var enterCard = CacheUtil.getUser()?.identityCard
-        identityCard.visible(!(enterCard == null || enterCard!!.isEmpty()))
+        val headUrl = CacheUtil.getUser()?.headUrl
+        head.visible(!(headUrl == null || headUrl.isEmpty()))
+        Glide.with(this)
+            .load(FILE_SERVER + headUrl)
+            .into(object : SimpleTarget<Drawable?>() {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable?>?
+                ) {
+                    head.setRightTvDrawableRight(resource)
+                }
+            })
+
+        val lisence = CacheUtil.getUser()?.enterpriseEntity?.businessLicenseImg
+        license.visible(!(lisence == null || lisence.isEmpty()))
+        Glide.with(this)
+            .load(FILE_SERVER + lisence)
+            .into(object : SimpleTarget<Drawable?>() {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable?>?
+                ) {
+                    license.setRightTvDrawableRight(resource)
+                }
+            })
+
+        val enterCard = CacheUtil.getUser()?.identityCard
+        identityCard.visible(!(enterCard == null || enterCard.isEmpty()))
         identityCard.setRightString(enterCard)
 
-        var enterName = CacheUtil.getUser()?.enterpriseEntity?.enterpriseName
-        enterpriseName.visible(!(enterName == null || enterName!!.isEmpty()))
+        val enterName = CacheUtil.getUser()?.enterpriseEntity?.enterpriseName
+        enterpriseName.visible(!(enterName == null || enterName.isEmpty()))
         enterpriseName.setRightString(enterName)
 
-        var enterCode = CacheUtil.getUser()?.enterpriseEntity?.enterpriseCode
-        enterpriseCode.visible(!(enterCode == null || enterCode!!.isEmpty()))
+        val enterCode = CacheUtil.getUser()?.enterpriseEntity?.enterpriseCode
+        enterpriseCode.visible(!(enterCode == null || enterCode.isEmpty()))
         enterpriseCode.setRightString(enterCode)
 
-        var enterLegal = CacheUtil.getUser()?.enterpriseEntity?.legalRepresentative
-        legalRepresentative.visible(!(enterLegal == null || enterLegal!!.isEmpty()))
+        val enterLegal = CacheUtil.getUser()?.enterpriseEntity?.legalRepresentative
+        legalRepresentative.visible(!(enterLegal == null || enterLegal.isEmpty()))
         legalRepresentative.setRightString(enterLegal)
 
-        var enterType = CacheUtil.getUser()?.enterpriseEntity?.businessType
-        businessType.visible(!(enterType == null || enterType!!.isEmpty()))
+        val enterType = CacheUtil.getUser()?.enterpriseEntity?.businessType
+        businessType.visible(!(enterType == null || enterType.isEmpty()))
         businessType.setRightString(enterType)
 
-        var enterCapital = CacheUtil.getUser()?.enterpriseEntity?.registeredCapital
-        registeredCapital.visible(!(enterCapital == null || enterCapital!!.isEmpty()))
+        val enterCapital = CacheUtil.getUser()?.enterpriseEntity?.registeredCapital
+        registeredCapital.visible(!(enterCapital == null || enterCapital.isEmpty()))
         registeredCapital.setRightString(enterCapital)
 
-        var enterScope = CacheUtil.getUser()?.enterpriseEntity?.businessScope
-        businessScope.visible(!(enterScope == null || enterScope!!.isEmpty()))
+        val enterScope = CacheUtil.getUser()?.enterpriseEntity?.businessScope
+        businessScope.visible(!(enterScope == null || enterScope.isEmpty()))
         businessScope.setRightString(enterScope)
 
-        var enterDate = CacheUtil.getUser()?.enterpriseEntity?.setUpDate
-        setUpDate.visible(!(enterDate == null || enterDate!!.isEmpty()))
+        val enterDate = CacheUtil.getUser()?.enterpriseEntity?.setUpDate
+        setUpDate.visible(!(enterDate == null || enterDate.isEmpty()))
         setUpDate.setRightString(enterDate)
 
-        var enterTerm = CacheUtil.getUser()?.enterpriseEntity?.businessTerm
-        businessTerm.visible(!(enterTerm == null || enterTerm!!.isEmpty()))
+        val enterTerm = CacheUtil.getUser()?.enterpriseEntity?.businessTerm
+        businessTerm.visible(!(enterTerm == null || enterTerm.isEmpty()))
         businessTerm.setRightString(enterTerm)
 
-        var enterAddress = CacheUtil.getUser()?.enterpriseEntity?.address
-        address.visible(!(enterAddress == null || enterAddress!!.isEmpty()))
+        val enterAddress = CacheUtil.getUser()?.enterpriseEntity?.address
+        address.visible(!(enterAddress == null || enterAddress.isEmpty()))
         address.setRightString(enterAddress)
     }
 }

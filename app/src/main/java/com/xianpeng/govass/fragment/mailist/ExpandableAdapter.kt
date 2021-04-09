@@ -58,6 +58,7 @@ class ExpandableAdapter(
             if (onElementClickListener != null) {
                 onElementClickListener!!.onElementClick(
                     mGroupArray!![groupPosition].id,
+                    mGroupArray!![groupPosition].name!!,
                     R.id.tv_msg
                 );
             }
@@ -103,6 +104,7 @@ class ExpandableAdapter(
             if (onElementClickListener != null) {
                 onElementClickListener!!.onElementClick(
                     mChildArray!![groupPosition][childPosition].userId,
+                    realName,
                     R.id.tv_delete
                 );
             }
@@ -152,5 +154,5 @@ class ExpandableAdapter(
 }
 
 interface OnElementClickListener {
-    fun onElementClick(id: Int, elementId: Int)
+    fun onElementClick(id: Int, name: String, elementId: Int)
 }

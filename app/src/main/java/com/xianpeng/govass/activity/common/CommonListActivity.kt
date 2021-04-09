@@ -1,6 +1,7 @@
 package com.xianpeng.govass.activity.common
 
 import android.content.Intent
+import android.graphics.Color.RED
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,9 +86,8 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 titlebar.addAction(object : TitleBar.Action {
                     override fun leftPadding(): Int = 0
                     override fun performAction(view: View?) {
-                        // TODO: 2021/3/27 新增反馈
+                        startActivity(Intent(this@CommonListActivity, FeedBackDetailActivity::class.java))
                     }
-
                     override fun rightPadding(): Int = 0
                     override fun getText(): String = "新增反馈"
                     override fun getDrawable(): Int = 0
@@ -202,33 +202,24 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
 
     //-----------反馈历史------------
     private fun initFeedBackListAdapter() {
-        feedBackAdapter =
-            object : BaseQuickAdapter<FeedBackBase.FeedBackList.FeedBackItem, BaseViewHolder>(
-                R.layout.adapter_feedback_item,
-                mFeedBackData
-            ) {
-                override fun convert(
-                    holder: BaseViewHolder,
-                    item: FeedBackBase.FeedBackList.FeedBackItem
-                ) {
-                    holder.setText(R.id.tv_title, item.title)
+        feedBackAdapter = object : BaseQuickAdapter<FeedBackBase.FeedBackList.FeedBackItem, BaseViewHolder>(R.layout.adapter_feedback_item, mFeedBackData) {
+                override fun convert(holder: BaseViewHolder, item: FeedBackBase.FeedBackList.FeedBackItem) {
+                    holder.setText(R.id.tv_title, item.content)
                     holder.setText(R.id.tv_status, if (item.status == 0) "待处理" else "已受理")
+                    holder.setTextColor(R.id.tv_status, if (item.status == 0) resources.getColor(R.color.xui_config_color_red) else resources.getColor(R.color.Green))
                     holder.setText(R.id.tv_creat_time, item.createTime)
+                    holder.setText(R.id.tv_creater, item.username)
                 }
             }
         recycleview!!.layoutManager = LinearLayoutManager(App.instance)
         recycleview!!.adapter = feedBackAdapter
         feedBackAdapter!!.setOnItemClickListener { _, _, position ->
-            startActivity(
-                Intent(this, FeedBackDetailActivity::class.java)
-                    .putExtra("feedBackId", mFeedBackData[position].id)
-            )
+            startActivity(Intent(this, FeedBackDetailActivity::class.java).putExtra("feedBackId", mFeedBackData[position].id))
         }
     }
 
     private fun getFeedBackList(page: Int, isClearData: Boolean) {
-        val url =
-            if (CacheUtil.getUser()!!.userType == 0) GET_FEEDBACK_LIST_ALL else GET_FEEDBACK_LIST_ME
+        val url = if (CacheUtil.getUser()!!.userType == 0) GET_FEEDBACK_LIST_ALL else GET_FEEDBACK_LIST_ME
         AndroidNetworking.get(url + page)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
             .build().getAsObject(FeedBackBase::class.java, object :
@@ -424,13 +415,25 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
-        getNormalMsgList(1, true)
+        when (pageParam) {
+            Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, true)
+            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, true)
+            Constants.PROJECT_DECLARE_PAGE -> getProjectDeclareList(page, true, projectStatus)
+            Constants.QUESTION_NAIRE_PAGE -> getQuestionNaireList(page, true, questionNaireStatus)
+            Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, true)
+        }
         refreshLayout.finishRefresh()
     }
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         page += 1
-        getNormalMsgList(page, false)
+        when (pageParam) {
+            Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, false)
+            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, false)
+            Constants.PROJECT_DECLARE_PAGE -> getProjectDeclareList(page, false, projectStatus)
+            Constants.QUESTION_NAIRE_PAGE -> getQuestionNaireList(page, false, questionNaireStatus)
+            Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, false)
+        }
         refreshLayout.finishLoadMore()
     }
 

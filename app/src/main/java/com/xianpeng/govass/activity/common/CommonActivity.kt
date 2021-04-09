@@ -25,7 +25,7 @@ class CommonActivity : BaseActivity<CommonViewModel>() {
             pdfView,
             wordView,
             photoView,
-            fileName,
+            fileName!!,
             filePath
         )
     }

@@ -138,7 +138,7 @@ class PerfectInfoActivity : BaseActivity<BaseViewModel>() {
 
                     var attachment = response.data as Attachment
                     iv_add.visible(false)
-                    glidePicToImg(attachment.filePath, iv_preview)
+                    glidePicToImg(attachment.filePath!!, iv_preview)
                     licenseImg = attachment.filePath
                 }
 

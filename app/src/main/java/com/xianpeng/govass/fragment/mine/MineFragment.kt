@@ -7,6 +7,7 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.tencent.mmkv.MMKV
+import com.xianpeng.govass.BuildConfig
 import com.xianpeng.govass.Constants
 import com.xianpeng.govass.Constants.Companion.NORMAL_MSG_PAGE
 import com.xianpeng.govass.R
@@ -18,6 +19,7 @@ import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.ext.toastNormal
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.textview.badge.BadgeView
@@ -35,21 +37,21 @@ class MineFragment : BaseFragment<BaseViewModel>() {
         titlebar.addAction(object : TitleBar.Action {
             override fun leftPadding(): Int = 0
             override fun performAction(view: View?) {
-                startActivity(
-                    Intent(activity, CommonListActivity::class.java).putExtra(
-                        "pageParam",
-                        NORMAL_MSG_PAGE
-                    )
-                )
+                startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", NORMAL_MSG_PAGE))
             }
-
             override fun rightPadding(): Int = 0
             override fun getText(): String = ""
             override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
         })
+        version.setRightString(BuildConfig.VERSION_NAME)
         account.setLeftString(CacheUtil.getUser()?.realname)
-
+        ll_user_info.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
         account.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
+
+        project_declare.text = if(CacheUtil.getUser()!!.userType ==0) "项目申报" else "我的申报"
+        my_msg.text = if(CacheUtil.getUser()!!.userType ==0) "我的发文" else "我的收文"
+        ll_my_project.setOnClickListener { startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.PROJECT_DECLARE_PAGE)) }
+        ll_my_article.setOnClickListener { toastNormal("我的收文界面") }
         tuiguang.setOnClickListener { }
         kefu.setOnClickListener { }
         switchAccount.setOnClickListener {

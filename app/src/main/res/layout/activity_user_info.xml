@@ -13,6 +13,26 @@
         <include layout="@layout/titlebar_layout" />
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/head"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:sLeftMaxEms="30"
+            app:sLeftTextString="头像"
+            app:sLeftViewGravity="left_center"
+            app:sRightTvDrawableHeight="40dp"
+            app:sRightTvDrawableWidth="40dp" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+            android:id="@+id/license"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:sLeftMaxEms="30"
+            app:sLeftTextString="营业执照"
+            app:sLeftViewGravity="left_center"
+            app:sRightTvDrawableHeight="40dp"
+            app:sRightTvDrawableWidth="40dp" />
+
+        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/username"
             style="@style/InfoItem.Account"
             app:sLeftTextString="用户名" />

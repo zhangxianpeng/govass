@@ -9,10 +9,6 @@ import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
 import com.xianpeng.govass.fragment.dyment.DymentItem
 
-/**
- * Date: 2021-02-18
- * Desc:
- */
 class DymentAdapter(
     recyclerView: RecyclerView,
     private val delegate: BGANinePhotoLayout.Delegate
