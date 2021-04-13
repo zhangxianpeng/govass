@@ -64,11 +64,7 @@ class ProjectDeclareActivity : BaseActivity<ProjectDeclareViewModel>() {
     }
 
     private fun initAttachmentAdapter() {
-        attachmentAdapter = object :
-            BaseQuickAdapter<String, BaseViewHolder>(
-                R.layout.adapter_attachment_item,
-                attachmentList
-            ) {
+        attachmentAdapter = object : BaseQuickAdapter<String, BaseViewHolder>(R.layout.adapter_attachment_item, attachmentList) {
             override fun convert(holder: BaseViewHolder, item: String) {
                 holder.setText(R.id.tv_name, item)
             }
@@ -101,8 +97,7 @@ class ProjectDeclareActivity : BaseActivity<ProjectDeclareViewModel>() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
             if (requestCode == 1001) {
-                val essFileList =
-                    data.getStringArrayListExtra(Const.EXTRA_RESULT_SELECTION) ?: return
+                val essFileList = data.getStringArrayListExtra(Const.EXTRA_RESULT_SELECTION) ?: return
                 attachmentList.clear()
                 attachmentList.addAll(essFileList)
                 if (attachmentAdapter != null) attachmentAdapter!!.notifyDataSetChanged()

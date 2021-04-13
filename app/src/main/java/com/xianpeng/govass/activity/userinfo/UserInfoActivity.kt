@@ -27,8 +27,7 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
 
         val headUrl = CacheUtil.getUser()?.headUrl
         head.visible(!(headUrl == null || headUrl.isEmpty()))
-        Glide.with(this)
-            .load(FILE_SERVER + headUrl)
+        Glide.with(this).load(FILE_SERVER + headUrl)
             .into(object : SimpleTarget<Drawable?>() {
                 override fun onResourceReady(
                     resource: Drawable,

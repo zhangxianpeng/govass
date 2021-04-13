@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/rootView"
     tools:context=".fragment.mailist.MailistFragment">
 
     <include layout="@layout/tab_title_layout" />
@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="38dp"
-        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="20dp">
 
         <ImageView
@@ -27,8 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/iv_goverment_user"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/iv_goverment_user"
             android:text="@string/goverment_user"
             android:textColor="#ff303030"
             android:textSize="16sp" />
@@ -38,7 +38,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/tv_send_msg"
+            android:layout_toStartOf="@+id/tv_send_msg"
             android:src="@drawable/address_ic_architecture"
             android:visibility="gone" />
 
@@ -46,9 +46,9 @@
             android:id="@+id/tv_send_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
             android:text="@string/send_msg"
             android:textColor="#ff5379a0"
             android:textSize="14sp" />
@@ -58,9 +58,9 @@
         android:id="@+id/user_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="26dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
         android:divider="@null"
         android:drawSelectorOnTop="false"
         android:groupIndicator="@null"

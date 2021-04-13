@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
 import com.xianpeng.govass.ext.glidePicToCircleImg
 import com.xianpeng.govass.ext.visible
@@ -89,16 +90,11 @@ class ExpandableAdapter(
             itemHolder = convertView.tag as ViewHolderItem
         }
 
-        if ((mChildArray!![groupPosition][childPosition].headUrl) != null) {
-            glidePicToCircleImg(
-                mChildArray!![groupPosition][childPosition].headUrl,
-                itemHolder.img_head!!
-            )
-        }
+        glidePicToCircleImg(mChildArray!![groupPosition][childPosition].headUrl, itemHolder.img_head!!)
+
         val userName = mChildArray!![groupPosition][childPosition].realname
         val enterpriseName = mChildArray!![groupPosition][childPosition].enterpriseName
-        val realName =
-            if (TextUtils.isEmpty(enterpriseName)) userName else "$userName-$enterpriseName"
+        val realName = if (TextUtils.isEmpty(enterpriseName)) userName else "$userName-$enterpriseName"
         itemHolder.tv_username!!.text = realName
         itemHolder.tv_delete!!.setOnClickListener {
             if (onElementClickListener != null) {

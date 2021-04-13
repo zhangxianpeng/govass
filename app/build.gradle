@@ -128,4 +128,6 @@ dependencies {
     //下拉刷新
     implementation 'com.github.xuexiangjys.SmartRefreshLayout:refresh-header:1.1.5'
     implementation 'com.github.xuexiangjys.SmartRefreshLayout:refresh-layout:1.1.5'
+    //eventBus
+    implementation 'org.greenrobot:eventbus:3.2.0'
 }

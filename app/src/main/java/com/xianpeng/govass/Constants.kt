@@ -129,5 +129,11 @@ class Constants {
 
         //新增反馈消息
         const val  POST_ADD_NEW_FEEDBACK = "$BASE_IP/govass/sys/feedback/save"
+
+        //搜索政府用户
+        const val GET_SEARCH_GOVERMENT_USER_BY_USERNAME = "$BASE_IP/govass/sys/user/listAllGovernment?username="
+
+        //搜索企业用户
+        const val GET_SEARCH_ENTERPRISE_USER_BY_USERNAME = "$BASE_IP/govass/sys/enterpriseuser/listAllEnterprise?username="
     }
 }

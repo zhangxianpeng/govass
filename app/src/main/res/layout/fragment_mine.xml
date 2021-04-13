@@ -12,13 +12,26 @@
 
         <include layout="@layout/titlebar_layout" />
 
-        <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
-            android:id="@+id/account"
-            style="@style/InfoItem.Account"
-            android:layout_height="60dp"
-            app:sLeftIconRes="@drawable/default_tx_img"
-            app:sLeftTextString="帐号管理"
-            app:sLeftViewMarginLeft="10dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head_circleImg"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_height="wrap_content" />
+
+            <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                android:id="@+id/account"
+                style="@style/InfoItem.Account"
+                android:layout_height="60dp"
+                app:sLeftTextString="帐号管理"
+                app:sLeftViewMarginLeft="10dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,6 +134,7 @@
             </LinearLayout>
 
         </LinearLayout>
+
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/tuiguang"
             style="@style/InfoItem.Account"
@@ -144,8 +158,8 @@
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/version"
             style="@style/InfoItem.Account"
-            app:sRightTextString="1.0.1"
-            app:sLeftTextString="版本信息" />
+            app:sLeftTextString="版本信息"
+            app:sRightTextString="1.0.1" />
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/logout"

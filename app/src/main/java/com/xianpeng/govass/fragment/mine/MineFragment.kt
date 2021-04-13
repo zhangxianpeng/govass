@@ -17,6 +17,7 @@ import com.xianpeng.govass.activity.updatepwd.UpdatePwdActivity
 import com.xianpeng.govass.activity.userinfo.UserInfoActivity
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
+import com.xianpeng.govass.ext.glidePicToCircleImg
 import com.xianpeng.govass.ext.showMessage
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastNormal
@@ -37,20 +38,26 @@ class MineFragment : BaseFragment<BaseViewModel>() {
         titlebar.addAction(object : TitleBar.Action {
             override fun leftPadding(): Int = 0
             override fun performAction(view: View?) {
-                startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", NORMAL_MSG_PAGE))
+                startActivity(
+                    Intent(activity, CommonListActivity::class.java).putExtra("pageParam", NORMAL_MSG_PAGE)
+                )
             }
+
             override fun rightPadding(): Int = 0
             override fun getText(): String = ""
             override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
         })
         version.setRightString(BuildConfig.VERSION_NAME)
+        glidePicToCircleImg(CacheUtil.getUser()?.headUrl!!, head_circleImg)
         account.setLeftString(CacheUtil.getUser()?.realname)
         ll_user_info.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
         account.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
 
-        project_declare.text = if(CacheUtil.getUser()!!.userType ==0) "项目申报" else "我的申报"
-        my_msg.text = if(CacheUtil.getUser()!!.userType ==0) "我的发文" else "我的收文"
-        ll_my_project.setOnClickListener { startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.PROJECT_DECLARE_PAGE)) }
+        project_declare.text = if (CacheUtil.getUser()!!.userType == 0) "项目申报" else "我的申报"
+        my_msg.text = if (CacheUtil.getUser()!!.userType == 0) "我的发文" else "我的收文"
+        ll_my_project.setOnClickListener {
+            startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.PROJECT_DECLARE_PAGE))
+        }
         ll_my_article.setOnClickListener { toastNormal("我的收文界面") }
         tuiguang.setOnClickListener { }
         kefu.setOnClickListener { }
@@ -76,9 +83,7 @@ class MineFragment : BaseFragment<BaseViewModel>() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
-            getUnReadMsgCountAndShow()
-        }
+        if (!hidden) { getUnReadMsgCountAndShow() }
     }
 
     private fun getUnReadMsgCountAndShow() {

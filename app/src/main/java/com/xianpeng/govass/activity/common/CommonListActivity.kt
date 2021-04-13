@@ -33,6 +33,7 @@ import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.tabbar.EasyIndicator
 import kotlinx.android.synthetic.main.activity_common_list.*
+import kotlinx.android.synthetic.main.fragment_dyment.*
 import kotlinx.android.synthetic.main.layout_indicator.*
 import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
@@ -78,7 +79,6 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
         titlebar.setLeftClickListener { finish() }
         refreshLayout.setOnLoadMoreListener(this)
         refreshLayout.setOnRefreshListener(this)
-
         pageParam = intent.getStringExtra("pageParam")
         when (pageParam) {
             Constants.FEED_BACK_HIS_PAGE -> { //反馈历史
@@ -140,14 +140,22 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 getNormalMsgList(page, true)
             }
         }
+
+        multiple_status_view.setOnRetryClickListener {
+            showLoading()
+            when (pageParam) {
+                Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, true)
+                Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, true)
+                Constants.PROJECT_DECLARE_PAGE-> getProjectDeclareList(page, true, projectStatus)
+                Constants.QUESTION_NAIRE_PAGE-> getQuestionNaireList(page, true, questionNaireStatus)
+                Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, true)
+            }
+        }
     }
 
     //-----------消息列表------------
     private fun initMsgAdapter() {
-        msgAdapter = object : BaseQuickAdapter<NormalMsgItem, BaseViewHolder>(
-            R.layout.adapter_newmsg_item,
-            mNormalMsgData
-        ) {
+        msgAdapter = object : BaseQuickAdapter<NormalMsgItem, BaseViewHolder>(R.layout.adapter_newmsg_item, mNormalMsgData) {
             override fun convert(holder: BaseViewHolder, item: NormalMsgItem) {
                 holder.setText(R.id.tv_declare_result, item.title)
                 holder.setText(R.id.tv_declare_time, item.createTime)
@@ -236,8 +244,14 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                     if (isClearData) {
                         mFeedBackData.clear()
                     }
-                    mFeedBackData.addAll(response.data?.list!!)
-                    if (feedBackAdapter != null) feedBackAdapter!!.notifyDataSetChanged()
+
+                    if (response.data?.list!!.isEmpty()) {
+                        multiple_status_view.showEmpty()
+                    } else {
+                        multiple_status_view.showContent()
+                        mFeedBackData.addAll(response.data?.list!!)
+                        if (feedBackAdapter != null) feedBackAdapter!!.notifyDataSetChanged()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
@@ -292,8 +306,14 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                     if (isClearData) {
                         mSystemNoticeData.clear()
                     }
-                    mSystemNoticeData.addAll(response.data?.list!!)
-                    if (systemNoticeAdapter != null) systemNoticeAdapter!!.notifyDataSetChanged()
+
+                    if (response.data?.list!!.isEmpty()) {
+                        multiple_status_view.showEmpty()
+                    } else {
+                        multiple_status_view.showContent()
+                        mSystemNoticeData.addAll(response.data?.list!!)
+                        if (systemNoticeAdapter != null) systemNoticeAdapter!!.notifyDataSetChanged()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
@@ -350,8 +370,13 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                     if (isClearData) {
                         mProjectData.clear()
                     }
-                    mProjectData.addAll(response.data?.list!!)
-                    if (projectAdapter != null) projectAdapter!!.notifyDataSetChanged()
+                    if (response.data?.list!!.isEmpty()) {
+                        multiple_status_view.showEmpty()
+                    } else {
+                        multiple_status_view.showContent()
+                        mProjectData.addAll(response.data?.list!!)
+                        if (projectAdapter != null) projectAdapter!!.notifyDataSetChanged()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
@@ -404,8 +429,13 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                     if (isClearData) {
                         mNormalMsgData.clear()
                     }
-                    mQuestionData.addAll(response.data?.list!!)
-                    if (questionAdapter != null) questionAdapter!!.notifyDataSetChanged()
+                    if (response.data?.list!!.isEmpty()) {
+                        multiple_status_view.showEmpty()
+                    } else {
+                        multiple_status_view.showContent()
+                        mQuestionData.addAll(response.data?.list!!)
+                        if (questionAdapter != null) questionAdapter!!.notifyDataSetChanged()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
@@ -441,14 +471,15 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
         projectStatus = position
         questionNaireStatus = position
         if (projectStatus == 1) {
-            getProjectDeclareList(page, true, projectStatus)
+            when(title) {
+                "待审核"->getProjectDeclareList(page, true, projectStatus)
+                "待填报"->getQuestionNaireList(page, true, projectStatus)
+            }
         } else {
-            getProjectDeclareList(page, true, projectStatus)
-        }
-        if (questionNaireStatus == 1) {
-            getQuestionNaireList(page, true, questionNaireStatus)
-        } else {
-            getQuestionNaireList(page, true, questionNaireStatus)
+            when(title) {
+                "已审核"->getProjectDeclareList(page, true, projectStatus)
+                "已填报"->getQuestionNaireList(page, true, projectStatus)
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.xianpeng.govass.ext
 
+import android.app.Activity
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import com.afollestad.materialdialogs.WhichButton
 import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.xianpeng.govass.util.SettingUtil
+import com.zlylib.fileselectorlib.FileSelector
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -174,4 +176,25 @@ fun getProcessName(pid: Int): String? {
 fun getFileName(originalPath: String):String {
     val tempFile = File(originalPath.trim())
     return  tempFile.getName()
+}
+
+fun chooseFile(activity: Activity) {
+    FileSelector.from(activity)
+        .setMaxCount(5) //设置最大选择数
+        .setFileTypes(
+            "png",
+            "doc",
+            "docx",
+            "xls",
+            "apk",
+            "mp3",
+            "gif",
+            "txt",
+            "mp4",
+            "zip",
+            "pdf"
+        ) //设置文件类型
+        .setSortType(FileSelector.BY_NAME_ASC) //设置名字排序
+        .requestCode(1001) //设置返回码
+        .start()
 }

@@ -18,5 +18,5 @@
 
     <include layout="@layout/layout_indicator" />
 
-    <include layout="@layout/layout_refresh_recycleview" />
+    <include layout="@layout/layout_multy_status" />
 </LinearLayout>

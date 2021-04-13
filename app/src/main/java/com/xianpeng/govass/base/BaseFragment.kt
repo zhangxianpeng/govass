@@ -20,7 +20,7 @@ abstract class BaseFragment<VM : BaseViewModel> : BaseVmFragment<VM>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).init()
+        ImmersionBar.with(this).statusBarColor(R.color.blue).fitsSystemWindows(true).keyboardEnable(true).init()
     }
 
     /**

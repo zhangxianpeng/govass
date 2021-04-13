@@ -105,10 +105,7 @@ class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, O
     }
 
     private fun initMsgAdapter() {
-        msgAdapter = object : BaseQuickAdapter<NormalMsgItem, BaseViewHolder>(
-            R.layout.adapter_normalmsg_item,
-            mNormalMsgData
-        ) {
+        msgAdapter = object : BaseQuickAdapter<NormalMsgItem, BaseViewHolder>(R.layout.adapter_normalmsg_item, mNormalMsgData) {
             override fun convert(holder: BaseViewHolder, item: NormalMsgItem) {
                 holder.setText(R.id.tv_title, item.title)
             }
