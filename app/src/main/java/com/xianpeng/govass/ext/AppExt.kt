@@ -181,19 +181,7 @@ fun getFileName(originalPath: String):String {
 fun chooseFile(activity: Activity) {
     FileSelector.from(activity)
         .setMaxCount(5) //设置最大选择数
-        .setFileTypes(
-            "png",
-            "doc",
-            "docx",
-            "xls",
-            "apk",
-            "mp3",
-            "gif",
-            "txt",
-            "mp4",
-            "zip",
-            "pdf"
-        ) //设置文件类型
+        .setFileTypes("doc", "docx", "xls", "apk", "mp3", "txt", "mp4", "zip", "pdf") //设置文件类型
         .setSortType(FileSelector.BY_NAME_ASC) //设置名字排序
         .requestCode(1001) //设置返回码
         .start()

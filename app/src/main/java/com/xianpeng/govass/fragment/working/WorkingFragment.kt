@@ -2,6 +2,7 @@ package com.xianpeng.govass.fragment.working
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +33,10 @@ import com.xianpeng.govass.activity.login.LoginActivity
 import com.xianpeng.govass.adapter.RecyclerViewBannerAdapter
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
+import com.xianpeng.govass.bean.MSGTYPE
+import com.xianpeng.govass.bean.Msg
 import com.xianpeng.govass.ext.toastError
+import com.xianpeng.govass.fragment.mailist.ChildRes
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.banner.recycler.BannerLayout
@@ -42,8 +46,11 @@ import kotlinx.android.synthetic.main.fragment_working.*
 import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
-class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, OnRefreshListener,
+class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener, OnRefreshListener,
     OnLoadMoreListener, BannerLayout.OnBannerItemClickListener {
     private val searchFragment by lazy { SearchFragment.newInstance() }
     private var page = 1
@@ -66,6 +73,7 @@ class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, O
 
     override fun layoutId(): Int = R.layout.fragment_working
     override fun initView(savedInstanceState: Bundle?) {
+        EventBus.getDefault().register(this)
         getUnReadMsgCountAndShow()
         titlebar.setLeftVisible(false)
         titlebar.setTitle("")
@@ -206,10 +214,13 @@ class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, O
     override fun onDestroy() {
         super.onDestroy()
         ad_banner.recycle()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun OnSearchClick(keyword: String?) {
-        TODO("Not yet implemented")
+       if(!TextUtils.isEmpty(keyword)) {
+           mViewModel.globalSearch(keyword)
+       }
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
@@ -284,5 +295,24 @@ class WorkingFragment : BaseFragment<BaseViewModel>(), IOnSearchClickListener, O
             )
             else -> Log.e("zhangxianpeng", "无一命中")
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: Msg?) {
+        dismissLoading()
+        if (event?.msg == MSGTYPE.POST_READ_PLAIN_MSG_SUCCESS.name) {
+            getUnReadMsgCountAndShow()
+        } else if(event?.msg == MSGTYPE.GET_GLOBAL_SEARCH_RESULT_SUCCESS.name) {
+            var searchResultDta = event.searchResultDta
+            showSearchResultDtaDialog(searchResultDta)
+        }
+    }
+
+    /**
+     * 展示全局搜索结果
+     * @param searchResultDta 搜索结果
+     */
+    private fun showSearchResultDtaDialog(searchResultDta: List<GlobalSearchBean.GlobalSearchDta>?) {
+
     }
 }

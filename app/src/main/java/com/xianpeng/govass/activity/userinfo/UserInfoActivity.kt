@@ -1,5 +1,6 @@
 package com.xianpeng.govass.activity.userinfo
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import com.bumptech.glide.Glide
@@ -7,7 +8,9 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
+import com.xianpeng.govass.activity.common.CommonActivity
 import com.xianpeng.govass.base.BaseActivity
+import com.xianpeng.govass.bean.Attachment
 import com.xianpeng.govass.ext.visible
 import com.xianpeng.govass.util.CacheUtil
 import kotlinx.android.synthetic.main.activity_user_info.*
@@ -36,6 +39,10 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
                     head.setRightTvDrawableRight(resource)
                 }
             })
+        val headAttachment = Attachment()
+        headAttachment.name = headUrl
+        headAttachment.url = headUrl
+        head.setOnClickListener { startActivity(Intent(this, CommonActivity::class.java).putExtra("fileItem", headAttachment)) }
 
         val lisence = CacheUtil.getUser()?.enterpriseEntity?.businessLicenseImg
         license.visible(!(lisence == null || lisence.isEmpty()))
@@ -49,6 +56,10 @@ class UserInfoActivity : BaseActivity<BaseViewModel>() {
                     license.setRightTvDrawableRight(resource)
                 }
             })
+        val lisenceAttachment = Attachment()
+        lisenceAttachment.name = headUrl
+        lisenceAttachment.url = headUrl
+        license.setOnClickListener { startActivity(Intent(this, CommonActivity::class.java).putExtra("fileItem", lisenceAttachment)) }
 
         val enterCard = CacheUtil.getUser()?.identityCard
         identityCard.visible(!(enterCard == null || enterCard.isEmpty()))

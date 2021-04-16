@@ -34,7 +34,7 @@ class Constants {
         const val FILE_SERVER = "$BASE_IP/govass/file-server/"
 
         //app版本更新
-        const val GET_APP_UPDATE_URL = "$BASE_IP/govass/sys/app-version/lastest"
+        const val GET_APP_UPDATE_URL = "$BASE_IP/govass/sys/app-version/lastest?device=0"
 
         //获取用户信息
         const val GET_USER_INFO = "$BASE_IP/govass/sys/user/info"

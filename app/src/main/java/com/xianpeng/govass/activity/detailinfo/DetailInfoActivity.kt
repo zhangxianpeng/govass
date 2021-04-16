@@ -28,6 +28,8 @@ import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.common.CommonActivity
 import com.xianpeng.govass.base.BaseActivity
 import com.xianpeng.govass.bean.Attachment
+import com.xianpeng.govass.bean.MSGTYPE
+import com.xianpeng.govass.bean.Msg
 import com.xianpeng.govass.ext.loadRichText
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastSuccess
@@ -39,6 +41,7 @@ import kotlinx.android.synthetic.main.layout_rich_text.*
 import kotlinx.android.synthetic.main.layout_wraptext_view.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 /**
@@ -94,12 +97,7 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
         rv_attachment!!.layoutManager = LinearLayoutManager(App.instance)
         rv_attachment!!.adapter = attachmentAdapter
         attachmentAdapter!!.setOnItemClickListener { _, _, position ->
-            startActivity(
-                Intent(this, CommonActivity::class.java).putExtra(
-                    "fileItem",
-                    data[position]
-                )
-            )
+            startActivity(Intent(this, CommonActivity::class.java).putExtra("fileItem", data[position]))
         }
     }
 
@@ -152,6 +150,10 @@ class DetailInfoActivity : BaseActivity<BaseViewModel>() {
                     wrapTextView.text = response.data?.content
                     if (readFlag == 0) {
                         toastSuccess("本条消息已读")
+
+                        var readMsg = Msg()
+                        readMsg.msg = MSGTYPE.POST_READ_PLAIN_MSG_SUCCESS.name
+                        EventBus.getDefault().postSticky(readMsg)
                     }
                     if (CacheUtil.getUnReadCount()!!.toInt() > 1) {
                         CacheUtil.setUnReadCount(

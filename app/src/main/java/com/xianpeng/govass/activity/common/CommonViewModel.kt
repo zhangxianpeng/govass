@@ -73,7 +73,7 @@ class CommonViewModel : BaseViewModel() {
                         pdfView.visible(false)
                         wordView.visible(false)
                         photoView.visible(true)
-                        Glide.with(context).load(FILE_SERVER + filePath)
+                        Glide.with(context).load(filePath)
                             .placeholder(R.drawable.default_img)
                             .error(R.drawable.default_img).into(photoView)
                     } else if (fileName.endsWith("pdf")) {

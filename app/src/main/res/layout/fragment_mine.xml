@@ -13,6 +13,7 @@
         <include layout="@layout/titlebar_layout" />
 
         <LinearLayout
+            android:id="@+id/ll_mine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -157,9 +158,13 @@
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/version"
-            style="@style/InfoItem.Account"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            app:sDividerLineType="both"
             app:sLeftTextString="版本信息"
-            app:sRightTextString="1.0.1" />
+            app:sRightIconRes="@drawable/btn_gray_right"
+            app:sRightViewMarginRight="0dp" />
 
         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
             android:id="@+id/logout"

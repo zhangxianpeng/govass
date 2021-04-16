@@ -23,6 +23,8 @@ import com.xianpeng.govass.activity.common.CommonListActivity
 import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
+import com.xianpeng.govass.bean.MSGTYPE
+import com.xianpeng.govass.bean.Msg
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
@@ -30,6 +32,9 @@ import com.xuexiang.xui.widget.textview.badge.BadgeView
 import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 
 class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoadMoreListener {
@@ -39,6 +44,7 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
     override fun layoutId(): Int = R.layout.fragment_policy
 
     override fun initView(savedInstanceState: Bundle?) {
+        EventBus.getDefault().register(this)
         getUnReadMsgCountAndShow()
         titlebar.setTitle("政策文件库")
         titlebar.setLeftVisible(false)
@@ -57,6 +63,11 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
         refreshLayout.setOnLoadMoreListener(this)
         initAdapter()
         initPageData(page, true)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     private fun initAdapter() {
@@ -151,6 +162,14 @@ class PolicyFragment() : BaseFragment<BaseViewModel>(), OnRefreshListener, OnLoa
                     toastError("获取未读消息数失败，请稍后再试，msg=" + anError!!.errorDetail)
                 }
             })
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: Msg?) {
+        dismissLoading()
+        if (event?.msg == MSGTYPE.POST_READ_PLAIN_MSG_SUCCESS.name) {
+            getUnReadMsgCountAndShow()
+        }
     }
 }
 
