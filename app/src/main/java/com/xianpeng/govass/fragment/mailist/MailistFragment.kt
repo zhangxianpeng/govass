@@ -26,9 +26,10 @@ import com.wyt.searchbox.SearchFragment
 import com.wyt.searchbox.custom.IOnSearchClickListener
 import com.xianpeng.govass.App
 import com.xianpeng.govass.Constants
-import com.xianpeng.govass.GlideImageLoader
 import com.xianpeng.govass.R
 import com.xianpeng.govass.activity.mailistmanager.MailistManagerActivity
+import com.xianpeng.govass.adapter.ExpandableAdapter
+import com.xianpeng.govass.adapter.OnElementClickListener
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.MSGTYPE
 import com.xianpeng.govass.bean.Msg
@@ -154,7 +155,11 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
     }
 
     private fun initUserAdapter() {
-        userAdapter = ExpandableAdapter(requireActivity(), groupArray, childArray)
+        userAdapter = ExpandableAdapter(
+            requireActivity(),
+            groupArray,
+            childArray
+        )
         user_listView.setAdapter(userAdapter)
         user_listView.setOnGroupClickListener { parent, view, groupPosition, id ->
             if (user_listView.isGroupExpanded(groupPosition)) {
@@ -175,7 +180,8 @@ class MailistFragment : BaseFragment<MailistViewModel>(), PopupWindow.OnDismissL
             true
         }
 
-        userAdapter!!.setOnElementClickListener(object : OnElementClickListener {
+        userAdapter!!.setOnElementClickListener(object :
+            OnElementClickListener {
             override fun onElementClick(id: Int, name: String, elementId: Int) {
                 when (elementId) {
                     R.id.tv_msg -> showGroupManageDialog(isGetGoverMentUser, name, id)

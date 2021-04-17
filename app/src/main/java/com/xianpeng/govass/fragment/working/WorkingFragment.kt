@@ -1,10 +1,16 @@
 package com.xianpeng.govass.fragment.working
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ExpandableListView
+import android.widget.PopupWindow
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
@@ -31,12 +37,12 @@ import com.xianpeng.govass.activity.common.CommonListActivity
 import com.xianpeng.govass.activity.detailinfo.DetailInfoActivity
 import com.xianpeng.govass.activity.login.LoginActivity
 import com.xianpeng.govass.adapter.RecyclerViewBannerAdapter
+import com.xianpeng.govass.adapter.SearchResultExpandableAdapter
 import com.xianpeng.govass.base.BaseFragment
 import com.xianpeng.govass.bean.BaseResponse
 import com.xianpeng.govass.bean.MSGTYPE
 import com.xianpeng.govass.bean.Msg
 import com.xianpeng.govass.ext.toastError
-import com.xianpeng.govass.fragment.mailist.ChildRes
 import com.xianpeng.govass.util.CacheUtil
 import com.xuexiang.xui.widget.actionbar.TitleBar
 import com.xuexiang.xui.widget.banner.recycler.BannerLayout
@@ -45,13 +51,12 @@ import com.xuexiang.xui.widget.textview.badge.BadgeView
 import kotlinx.android.synthetic.main.fragment_working.*
 import kotlinx.android.synthetic.main.layout_refresh_recycleview.*
 import kotlinx.android.synthetic.main.titlebar_layout.*
-import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener, OnRefreshListener,
-    OnLoadMoreListener, BannerLayout.OnBannerItemClickListener {
+    OnLoadMoreListener, BannerLayout.OnBannerItemClickListener,PopupWindow.OnDismissListener {
     private val searchFragment by lazy { SearchFragment.newInstance() }
     private var page = 1
     private var mBannerOriginalData: MutableList<com.xianpeng.govass.fragment.working.BannerItem> =
@@ -71,6 +76,12 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
         "http://m.qpic.cn/psc?/V13knR7n1SVrTL/TmEUgtj9EK6.7V8ajmQrENtQ9.y03w9xkMMD4DlbgYwbRBOesW.rOoM8qBNFmrwfX0xjSSHPEwuD3bh8Dt323jtH6yFCabBMDiyP.eVBHks!/b&bo=QAJcAQAAAAADFy0!&rf=viewer_4"  //项目申报
     )
 
+    //全局搜索
+    private var globalSearchPop: PopupWindow? = null
+    private var groupArray: MutableList<GlobalSearchGroupDataBean> = ArrayList()
+    private var childArray: MutableList<ArrayList<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>> = ArrayList()
+    private var searcgDataAdapter: SearchResultExpandableAdapter? = null
+    
     override fun layoutId(): Int = R.layout.fragment_working
     override fun initView(savedInstanceState: Bundle?) {
         EventBus.getDefault().register(this)
@@ -110,8 +121,12 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
         bannerAdapter!!.setOnBannerItemClickListener(this)
         initMsgAdapter()
         initPageData()
+        initSearchAdapter()
     }
 
+    private fun initSearchAdapter() {
+    }
+    
     private fun initMsgAdapter() {
         msgAdapter = object : BaseQuickAdapter<NormalMsgItem, BaseViewHolder>(R.layout.adapter_normalmsg_item, mNormalMsgData) {
             override fun convert(holder: BaseViewHolder, item: NormalMsgItem) {
@@ -173,9 +188,9 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
     }
 
     private fun transData(mBannerOriginalData: MutableList<com.xianpeng.govass.fragment.working.BannerItem>): MutableList<BannerItem>? {
-        var result: MutableList<BannerItem> = ArrayList()
+        val result: MutableList<BannerItem> = ArrayList()
         for (i in 0 until mBannerOriginalData.size) {
-            var banner = BannerItem()
+            val banner = BannerItem()
             banner.imgUrl = FILE_SERVER + mBannerOriginalData[i].imageUrl
             banner.title =
                 mBannerOriginalData[i].contentType.toString() + mBannerOriginalData[i].title + "," + mBannerOriginalData[i].content
@@ -213,7 +228,9 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
 
     override fun onDestroy() {
         super.onDestroy()
-        ad_banner.recycle()
+        if(ad_banner!=null){
+            ad_banner.recycle()
+        }
         EventBus.getDefault().unregister(this)
     }
 
@@ -254,7 +271,7 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
                         toastError(response.msg)
                         return
                     }
-                    BadgeView(context).bindTarget(titlebar).badgeNumber = response.data!!.toInt()
+                    BadgeView(context).bindTarget(titlebar).badgeNumber = response.data.toInt()
                 }
 
                 override fun onError(anError: ANError?) {
@@ -303,16 +320,93 @@ class WorkingFragment : BaseFragment<WorkingViewModel>(), IOnSearchClickListener
         if (event?.msg == MSGTYPE.POST_READ_PLAIN_MSG_SUCCESS.name) {
             getUnReadMsgCountAndShow()
         } else if(event?.msg == MSGTYPE.GET_GLOBAL_SEARCH_RESULT_SUCCESS.name) {
-            var searchResultDta = event.searchResultDta
-            showSearchResultDtaDialog(searchResultDta)
+            val searchResultDta = event.searchResultDta
+            //配置数据
+            groupArray.clear()
+            childArray.clear()
+            groupArray = transSearchData(searchResultDta)
+            childArray.add(searchResultDta!! as ArrayList<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>)
+            showSearchResultDtaDialog(groupArray,childArray)
         }
+    }
+
+    private fun transSearchData(searchResultDta: List<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>?): MutableList<GlobalSearchGroupDataBean> {
+        val searchResultGroupData: MutableList<GlobalSearchGroupDataBean> = ArrayList()
+        var i = 0
+        var j = 0
+        var k = 0
+        for (l in searchResultDta!!.indices) {
+            when (searchResultDta[l].type) {
+                0 -> i++
+                1 -> j++
+                2 -> k++
+            }
+        }
+
+        for (m in searchResultDta.indices) {
+            val globalSearchGroup = GlobalSearchGroupDataBean()
+            when(searchResultDta[m].type ) {
+                0->{
+                    globalSearchGroup.type = "千企动态"
+                    globalSearchGroup.cocunt = i
+                    searchResultGroupData.add(globalSearchGroup)
+                }
+                1->{
+                    globalSearchGroup.type = "系统公告"
+                    globalSearchGroup.cocunt = j
+                    searchResultGroupData.add(globalSearchGroup)
+                }
+                2->{
+                    globalSearchGroup.type = "政策文件库"
+                    globalSearchGroup.cocunt = k
+                    searchResultGroupData.add(globalSearchGroup)
+                }
+            }
+        }
+        return  searchResultGroupData
     }
 
     /**
      * 展示全局搜索结果
      * @param searchResultDta 搜索结果
      */
-    private fun showSearchResultDtaDialog(searchResultDta: List<GlobalSearchBean.GlobalSearchDta>?) {
+    @SuppressLint("InflateParams")
+    private fun showSearchResultDtaDialog(groupArray: MutableList<GlobalSearchGroupDataBean>, childArray: MutableList<ArrayList<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>>) {
+        val contentView: View = LayoutInflater.from(requireActivity()).inflate(R.layout.layout_global_search, null)
+        initGlobalSearchPopView(contentView,groupArray,childArray)
+        globalSearchPop = PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+        globalSearchPop!!.isOutsideTouchable = true
+        backgroundAlpha(0.3f)
+        globalSearchPop!!.setOnDismissListener(this)
+        globalSearchPop!!.setBackgroundDrawable(BitmapDrawable())
+        globalSearchPop!!.showAsDropDown(rootLayout, 0,0)
+    }
 
+    private fun initGlobalSearchPopView(
+        contentView: View,
+        searchResultDta: MutableList<GlobalSearchGroupDataBean>,
+        childArray: MutableList<ArrayList<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>>
+    ) {
+        val searchResultView = contentView.findViewById<ExpandableListView>(R.id.expandlistview)
+        searcgDataAdapter =
+            SearchResultExpandableAdapter(
+                requireActivity(),
+                searchResultDta,
+                childArray
+            )
+        searchResultView.setAdapter(searcgDataAdapter)
+    }
+
+    private fun backgroundAlpha(bgAlpha: Float) {
+        val lp = requireActivity().window.attributes
+        lp.alpha = bgAlpha
+        requireActivity().window.attributes = lp
+    }
+
+    override fun onDismiss() {
+        backgroundAlpha(1.0f);
+        if (globalSearchPop != null) {
+            globalSearchPop!!.dismiss()
+        }
     }
 }

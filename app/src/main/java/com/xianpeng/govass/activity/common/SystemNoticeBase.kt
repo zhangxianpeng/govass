@@ -11,7 +11,7 @@ data class SystemNoticeBase(
         data class SystemNoticeItem(
             var id: Int = -1,
             var title: String = "",
-            var  imageUrl: String = "",
+            var imageUrl: String = "",
             var content: String = "",
             var contentType: Int = -1,
             var createTime: String = ""

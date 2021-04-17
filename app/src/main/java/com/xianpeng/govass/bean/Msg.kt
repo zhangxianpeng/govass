@@ -10,8 +10,8 @@ class Msg {
     var groupData:MutableList<GroupRes.GroupDataList.GroupData>? = null
     var childDta:ArrayList<ChildRes.UserInfo>?=null
     var searchUserDta:ArrayList<ChildRes.UserInfo>?=null
-    var newVersionDta: NewVersionBean? = null
-    var searchResultDta:List<GlobalSearchBean.GlobalSearchDta>? = null
+    var newVersionDta: NewVersionBean.NewVersionDetail? = null
+    var searchResultDta:List<GlobalSearchBean.GlobalSearchBeanDetail.GlobalSearchDta>? = null
 }
 
 enum class MSGTYPE {

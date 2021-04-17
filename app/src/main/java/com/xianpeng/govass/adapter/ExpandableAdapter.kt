@@ -1,4 +1,4 @@
-package com.xianpeng.govass.fragment.mailist
+package com.xianpeng.govass.adapter
 
 import android.content.Context
 import android.text.TextUtils
@@ -8,17 +8,14 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import com.xianpeng.govass.Constants.Companion.FILE_SERVER
 import com.xianpeng.govass.R
 import com.xianpeng.govass.ext.glidePicToCircleImg
 import com.xianpeng.govass.ext.visible
+import com.xianpeng.govass.fragment.mailist.ChildRes
+import com.xianpeng.govass.fragment.mailist.GroupRes
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ExpandableAdapter(
-    context: Context,
-    groupData: List<GroupRes.GroupDataList.GroupData>?,
-    childData: List<List<ChildRes.UserInfo>>?
-) : BaseExpandableListAdapter() {
+class ExpandableAdapter(context: Context, groupData: List<GroupRes.GroupDataList.GroupData>?, childData: List<List<ChildRes.UserInfo>>?) : BaseExpandableListAdapter() {
     private var mContext: Context = context
     private var mGroupArray: List<GroupRes.GroupDataList.GroupData>? = groupData
     private var mChildArray: List<List<ChildRes.UserInfo>>? = childData
@@ -41,12 +38,9 @@ class ExpandableAdapter(
         var convertView = convertView
         val groupHolder: ViewHolderGroup
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(
-                R.layout.adapter_group_item, parent, false
-            )
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_group_item, parent, false)
             groupHolder = ViewHolderGroup()
-            groupHolder.tv_group_name =
-                convertView!!.findViewById<View>(R.id.tv_group_name) as TextView?
+            groupHolder.tv_group_name = convertView!!.findViewById<View>(R.id.tv_group_name) as TextView?
             groupHolder.tv_manager = convertView.findViewById<View>(R.id.tv_msg) as TextView?
             groupHolder.img_indicator = convertView.findViewById<View>(R.id.iv_left) as ImageView?
             convertView.tag = groupHolder
@@ -57,31 +51,20 @@ class ExpandableAdapter(
         groupHolder.tv_manager?.visible(groupPosition != 0)
         groupHolder.tv_manager?.setOnClickListener {
             if (onElementClickListener != null) {
-                onElementClickListener!!.onElementClick(
-                    mGroupArray!![groupPosition].id,
-                    mGroupArray!![groupPosition].name!!,
-                    R.id.tv_msg
-                );
+                onElementClickListener!!.onElementClick(mGroupArray!![groupPosition].id, mGroupArray!![groupPosition].name!!, R.id.tv_msg);
             }
         }
         groupHolder.img_indicator!!.setImageResource(if (isExpanded) R.drawable.down else R.drawable.right)
         return convertView
     }
 
-    override fun getChildView(
-        groupPosition: Int,
-        childPosition: Int,
-        isLastChild: Boolean,
-        convertView: View?,
-        parent: ViewGroup?
-    ): View? {
+    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View? {
         var convertView = convertView
         val itemHolder: ViewHolderItem
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(
-                R.layout.adapter_child_item, parent, false
-            )
-            itemHolder = ViewHolderItem()
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_child_item, parent, false)
+            itemHolder =
+                ViewHolderItem()
             itemHolder.img_head = convertView!!.findViewById<View>(R.id.iv_head) as CircleImageView?
             itemHolder.tv_username = convertView.findViewById<View>(R.id.tv_name) as TextView?
             itemHolder.tv_delete = convertView.findViewById<View>(R.id.tv_delete) as TextView?
@@ -91,18 +74,13 @@ class ExpandableAdapter(
         }
 
         glidePicToCircleImg(mChildArray!![groupPosition][childPosition].headUrl, itemHolder.img_head!!)
-
         val userName = mChildArray!![groupPosition][childPosition].realname
         val enterpriseName = mChildArray!![groupPosition][childPosition].enterpriseName
         val realName = if (TextUtils.isEmpty(enterpriseName)) userName else "$userName-$enterpriseName"
         itemHolder.tv_username!!.text = realName
         itemHolder.tv_delete!!.setOnClickListener {
             if (onElementClickListener != null) {
-                onElementClickListener!!.onElementClick(
-                    mChildArray!![groupPosition][childPosition].userId,
-                    realName,
-                    R.id.tv_delete
-                );
+                onElementClickListener!!.onElementClick(mChildArray!![groupPosition][childPosition].userId, realName, R.id.tv_delete)
             }
         }
         return convertView

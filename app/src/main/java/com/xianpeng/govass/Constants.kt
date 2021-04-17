@@ -17,6 +17,8 @@ class Constants {
         const val QUESTION_NAIRE_PAGE = "questionNaireHistoryPage"      //问卷调查
         const val SYSTEM_NOTICE_PAGE = "systemNoticePage"               //系统公告
         const val FEED_BACK_HIS_PAGE = "feedBackHistoryPage"            //反馈历史
+        const val SEND_OFFICIAL_DOCUMENT_PAGE = "sendOfficialDocumentPage"   //我的发文
+        const val MY_OFFICIAL_DOCUMENT_PAGE = "myOfficialDocumentPage"  //我的收文
 
         //验证码
         const val DEFAULT_CAPTCHA_SERVER = "$BASE_IP/govass/captcha.jpg"
@@ -64,6 +66,12 @@ class Constants {
 
         //系统公告
         const val GET_SYSTEM_NOTICE_LIST = "$BASE_IP/govass/sys/notice/list-published?page="
+
+        //我的发文 （政府）
+        const val GET_OFFICIAL_DOCUMENT_LIST = "$BASE_IP/govass/sys/officialdocument/list?page="
+
+        //我的收文 （企业）
+        const val GET_MY_OFFICIAL_DOCUMENT_LIST = "$BASE_IP/govass/sys/officialdocument/list-receive?page="
 
         //反馈历史（企业）
         const val GET_FEEDBACK_LIST_ME = "$BASE_IP/govass/sys/feedback/list-me?page="

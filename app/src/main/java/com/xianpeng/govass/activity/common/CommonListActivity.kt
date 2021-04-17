@@ -1,7 +1,6 @@
 package com.xianpeng.govass.activity.common
 
 import android.content.Intent
-import android.graphics.Color.RED
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -63,8 +62,7 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     private var questionAdapter: BaseQuickAdapter<NormalMsgItem, BaseViewHolder>? = null
 
     //系统公告
-    private var mSystemNoticeData: MutableList<SystemNoticeBase.SystemNoticeList.SystemNoticeItem> =
-        ArrayList()
+    private var mSystemNoticeData: MutableList<SystemNoticeBase.SystemNoticeList.SystemNoticeItem> = ArrayList()
     private var systemNoticeAdapter: BaseQuickAdapter<SystemNoticeBase.SystemNoticeList.SystemNoticeItem, BaseViewHolder>? =
         null
 
@@ -95,11 +93,6 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 initFeedBackListAdapter()
                 getFeedBackList(page, true)
             }
-            Constants.SYSTEM_NOTICE_PAGE -> {
-                titlebar.setTitle("系统公告")
-                initSystemNoticeListAdapter()
-                getSystemNoticeList(page, true)
-            }
             Constants.PROJECT_DECLARE_PAGE -> {
                 titlebar.setTitle(if (CacheUtil.getUser()!!.userType == 1) "项目申报" else "项目审批")
                 iv_banner.visible(true)
@@ -110,15 +103,8 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 if (CacheUtil.getUser()!!.userType == 1) {
                     titlebar.addAction(object : TitleBar.Action {
                         override fun leftPadding(): Int = 0
-                        override fun performAction(view: View?) {
-                            startActivity(
-                                Intent(
-                                    this@CommonListActivity,
-                                    ProjectDeclareActivity::class.java
-                                )
-                            )
+                        override fun performAction(view: View?) { startActivity(Intent(this@CommonListActivity, ProjectDeclareActivity::class.java))
                         }
-
                         override fun rightPadding(): Int = 0
                         override fun getText(): String = ""
                         override fun getDrawable(): Int = R.drawable.ic_add_24dp
@@ -139,13 +125,30 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
                 initMsgAdapter()
                 getNormalMsgList(page, true)
             }
+            Constants.SYSTEM_NOTICE_PAGE -> {
+                titlebar.setTitle("系统公告")
+                initSystemNoticeListAdapter(Constants.SYSTEM_NOTICE_PAGE)
+                getSystemNoticeList(page, true,Constants.SYSTEM_NOTICE_PAGE)
+            }
+            Constants.SEND_OFFICIAL_DOCUMENT_PAGE  -> {
+                titlebar.setTitle("我的发文")
+                initSystemNoticeListAdapter(Constants.SEND_OFFICIAL_DOCUMENT_PAGE)
+                getSystemNoticeList(page, true,Constants.SEND_OFFICIAL_DOCUMENT_PAGE)
+            }
+            Constants.MY_OFFICIAL_DOCUMENT_PAGE -> {
+                titlebar.setTitle("我的收文")
+                initSystemNoticeListAdapter(Constants.MY_OFFICIAL_DOCUMENT_PAGE)
+                getSystemNoticeList(page, true,Constants.MY_OFFICIAL_DOCUMENT_PAGE)
+            }
         }
 
         multiple_status_view.setOnRetryClickListener {
             showLoading()
             when (pageParam) {
                 Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, true)
-                Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, true)
+                Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, true, Constants.SYSTEM_NOTICE_PAGE)
+                Constants.SEND_OFFICIAL_DOCUMENT_PAGE -> getSystemNoticeList(page, true, Constants.SEND_OFFICIAL_DOCUMENT_PAGE)
+                Constants.MY_OFFICIAL_DOCUMENT_PAGE -> getSystemNoticeList(page, true, Constants.MY_OFFICIAL_DOCUMENT_PAGE)
                 Constants.PROJECT_DECLARE_PAGE-> getProjectDeclareList(page, true, projectStatus)
                 Constants.QUESTION_NAIRE_PAGE-> getQuestionNaireList(page, true, questionNaireStatus)
                 Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, true)
@@ -261,42 +264,37 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     }
 
     //-----------系统公告------------
-    private fun initSystemNoticeListAdapter() {
+    private fun initSystemNoticeListAdapter(flag: String) {
         systemNoticeAdapter = object :
-            BaseQuickAdapter<SystemNoticeBase.SystemNoticeList.SystemNoticeItem, BaseViewHolder>(
-                R.layout.adapter_system_notice_item, mSystemNoticeData
-            ) {
-            override fun convert(
-                holder: BaseViewHolder,
-                item: SystemNoticeBase.SystemNoticeList.SystemNoticeItem
-            ) {
+            BaseQuickAdapter<SystemNoticeBase.SystemNoticeList.SystemNoticeItem, BaseViewHolder>(R.layout.adapter_system_notice_item, mSystemNoticeData) {
+            override fun convert(holder: BaseViewHolder, item: SystemNoticeBase.SystemNoticeList.SystemNoticeItem) {
                 holder.setText(R.id.tv_title, item.title)
-                holder.setText(R.id.tv_ui_flag, "系统公告")
+                holder.setText(R.id.tv_ui_flag, if(flag == Constants.SYSTEM_NOTICE_PAGE )"系统公告" else if(flag == Constants.SEND_OFFICIAL_DOCUMENT_PAGE) "我的发文" else "我的收文")
                 holder.setText(R.id.tv_time, item.createTime)
             }
         }
         recycleview!!.layoutManager = LinearLayoutManager(App.instance)
         recycleview!!.adapter = systemNoticeAdapter
         systemNoticeAdapter!!.setOnItemClickListener { _, _, position ->
-            val title =
-                mSystemNoticeData[position].contentType.toString() + mSystemNoticeData[position].title + "," + mSystemNoticeData[position].content
-            startActivity(
-                Intent(this, DetailInfoActivity::class.java).putExtra(
-                    "pageParam",
-                    Constants.BANNER_PAGE
-                ).putExtra("bannerContent", title)
-            )
+            var title = ""
+            if(mSystemNoticeData[position].contentType!=-1) {
+                title = mSystemNoticeData[position].contentType.toString() + mSystemNoticeData[position].title + "," + mSystemNoticeData[position].content
+            } else {
+                title = "0"+ mSystemNoticeData[position].title + "," + mSystemNoticeData[position].content
+            }
+            startActivity(Intent(this, DetailInfoActivity::class.java).putExtra("pageParam", Constants.BANNER_PAGE).putExtra("bannerContent", title))
         }
     }
 
-    private fun getSystemNoticeList(page: Int, isClearData: Boolean) {
-        AndroidNetworking.get(Constants.GET_SYSTEM_NOTICE_LIST + page)
+    private fun getSystemNoticeList(page: Int, isClearData: Boolean, flag: String) {
+        var url = if(flag == Constants.SYSTEM_NOTICE_PAGE ) Constants.GET_SYSTEM_NOTICE_LIST else if(flag == Constants.SEND_OFFICIAL_DOCUMENT_PAGE) Constants.GET_OFFICIAL_DOCUMENT_LIST else Constants.GET_MY_OFFICIAL_DOCUMENT_LIST
+        AndroidNetworking.get(url + page)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
             .build().getAsObject(SystemNoticeBase::class.java, object :
                 ParsedRequestListener<SystemNoticeBase> {
                 override fun onResponse(response: SystemNoticeBase?) {
                     if (response == null) {
-                        toastError("获取系统公告数据失败，请稍后再试")
+                        toastError("获取数据失败，请稍后再试")
                         return
                     }
                     if (response.code != 0) {
@@ -447,7 +445,11 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     override fun onRefresh(refreshLayout: RefreshLayout) {
         when (pageParam) {
             Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, true)
-            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, true)
+            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(
+                page,
+                true,
+                Constants.SYSTEM_NOTICE_PAGE
+            )
             Constants.PROJECT_DECLARE_PAGE -> getProjectDeclareList(page, true, projectStatus)
             Constants.QUESTION_NAIRE_PAGE -> getQuestionNaireList(page, true, questionNaireStatus)
             Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, true)
@@ -459,7 +461,9 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
         page += 1
         when (pageParam) {
             Constants.FEED_BACK_HIS_PAGE -> getFeedBackList(page, false)
-            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, false)
+            Constants.SYSTEM_NOTICE_PAGE -> getSystemNoticeList(page, false, Constants.SYSTEM_NOTICE_PAGE)
+            Constants.SEND_OFFICIAL_DOCUMENT_PAGE -> getSystemNoticeList(page, false, Constants.SEND_OFFICIAL_DOCUMENT_PAGE)
+            Constants.MY_OFFICIAL_DOCUMENT_PAGE -> getSystemNoticeList(page, false, Constants.MY_OFFICIAL_DOCUMENT_PAGE)
             Constants.PROJECT_DECLARE_PAGE -> getProjectDeclareList(page, false, projectStatus)
             Constants.QUESTION_NAIRE_PAGE -> getQuestionNaireList(page, false, questionNaireStatus)
             Constants.NORMAL_MSG_PAGE -> getNormalMsgList(page, false)

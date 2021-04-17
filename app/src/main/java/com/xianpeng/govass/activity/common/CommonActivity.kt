@@ -33,13 +33,6 @@ class CommonActivity : BaseActivity<CommonViewModel>() {
                     var bitmap = QRCodeManager.getInstance().createQRCode("https://www.pgyer.com/0DXB",400,400)
                     photoView.setImageBitmap(bitmap)
                 }
-                "kefu" -> {
-                    var serverPhone = "892731274"
-                    showMessage("请联系系统管理员，联系方式：$serverPhone", positiveAction = {
-                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$serverPhone"))
-                        startActivity(dialIntent)
-                    }, negativeButtonText = "取消")
-                }
             }
         }
 

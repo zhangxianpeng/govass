@@ -51,26 +51,37 @@ class MineFragment : BaseFragment<MineViewModel>() {
                     Intent(activity, CommonListActivity::class.java).putExtra("pageParam", NORMAL_MSG_PAGE)
                 )
             }
-
             override fun rightPadding(): Int = 0
             override fun getText(): String = ""
             override fun getDrawable(): Int = R.drawable.ic_baseline_message_24
         })
 
-        version.setRightString(BuildConfig.VERSION_NAME)
+        version.setRightString(BuildConfig.VERSION_NAME + "        ")
         glidePicToCircleImg(CacheUtil.getUser()?.headUrl!!, head_circleImg)
         account.setLeftString(CacheUtil.getUser()?.realname)
         ll_user_info.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
-        ll_mine.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
+        account.setOnClickListener { startActivity(Intent(activity, UserInfoActivity::class.java)) }
 
         project_declare.text = if (CacheUtil.getUser()!!.userType == 0) "项目申报" else "我的申报"
         my_msg.text = if (CacheUtil.getUser()!!.userType == 0) "我的发文" else "我的收文"
         ll_my_project.setOnClickListener {
             startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.PROJECT_DECLARE_PAGE))
         }
-        ll_my_article.setOnClickListener { toastNormal("我的收文界面") }
+        ll_my_article.setOnClickListener {
+            if (CacheUtil.getUser()!!.userType == 0) {
+                    startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.SEND_OFFICIAL_DOCUMENT_PAGE))
+                } else {
+                    startActivity(Intent(activity, CommonListActivity::class.java).putExtra("pageParam", Constants.MY_OFFICIAL_DOCUMENT_PAGE))
+                }
+        }
         tuiguang.setOnClickListener { startActivity(Intent(requireActivity(), CommonActivity::class.java).putExtra("pageFlag", "tuiguang")) }
-        kefu.setOnClickListener { startActivity(Intent(requireActivity(), CommonActivity::class.java).putExtra("pageFlag", "kefu")) }
+        kefu.setOnClickListener {
+            val serverPhone = "892731274"
+            showMessage("请联系系统管理员，联系方式：$serverPhone", positiveAction = {
+                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$serverPhone"))
+                startActivity(dialIntent)
+            }, negativeButtonText = "取消")
+        }
         switchAccount.setOnClickListener {
             showMessage("确定切换账号登录吗，确定后将清除数据！", positiveAction = {
                 CacheUtil.clearUserInfo()
