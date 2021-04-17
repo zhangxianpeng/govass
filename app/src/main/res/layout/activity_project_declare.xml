@@ -34,16 +34,15 @@
                 android:textAlignment="viewStart"
                 android:textDirection="locale">
 
-                <com.xuexiang.xui.widget.edittext.materialedittext.MaterialEditText
+                <com.xuexiang.xui.widget.spinner.editspinner.EditSpinner
                     android:id="@+id/et_policy_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:hint="政策名称"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    app:es_hint="政策名称"
                     android:paddingLeft="10dp"
-                    app:met_clearButton="true"
-                    />
+                    app:met_clearButton="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

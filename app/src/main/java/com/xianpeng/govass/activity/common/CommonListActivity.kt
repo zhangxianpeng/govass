@@ -323,16 +323,13 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     //-----------项目申报------------
     private fun initProjectDeclareAdapter() {
         projectAdapter = object :
-            BaseQuickAdapter<ProjectDeclareBase.ProjectDeclareList.ProjectDeclareItem, BaseViewHolder>(
-                R.layout.adapter_system_notice_item,
-                mProjectData
-            ) {
+            BaseQuickAdapter<ProjectDeclareBase.ProjectDeclareList.ProjectDeclareItem, BaseViewHolder>(R.layout.adapter_system_notice_item, mProjectData) {
             override fun convert(
                 holder: BaseViewHolder,
                 item: ProjectDeclareBase.ProjectDeclareList.ProjectDeclareItem
             ) {
                 holder.setText(R.id.tv_title, item.name)
-                holder.setText(R.id.tv_ui_flag, "项目审批")
+                holder.setText(R.id.tv_ui_flag, if (CacheUtil.getUser()!!.userType == 1) "项目申报" else "项目审批")
                 holder.setText(R.id.tv_time, item.createTime)
             }
         }
@@ -350,8 +347,7 @@ class CommonListActivity : BaseActivity<BaseViewModel>(), OnRefreshListener, OnL
     }
 
     private fun getProjectDeclareList(page: Int, isClearData: Boolean, projectStatus: Int) {
-        val url =
-            if (projectStatus == 0) GET_HANDLED_PROJECT_LIST else GET_WAIT_PENDING_PROJECT_LIST
+        val url = if (projectStatus == 0) GET_HANDLED_PROJECT_LIST else GET_WAIT_PENDING_PROJECT_LIST
         AndroidNetworking.get(url + page)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
             .build().getAsObject(ProjectDeclareBase::class.java, object :

@@ -45,4 +45,9 @@ class CommonActivity : BaseActivity<CommonViewModel>() {
             mViewModel.downLoadFileAndOpen(applicationContext, pdfView, wordView, photoView, fileName!!, filePath)
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(wordView!=null) wordView.stop()
+    }
 }

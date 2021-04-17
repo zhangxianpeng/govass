@@ -5,63 +5,28 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.tencent.mmkv.MMKV
 import com.xianpeng.govass.Constants
-import com.xianpeng.govass.bean.Attachment
-import com.xianpeng.govass.bean.BaseFileUploadRes
-import com.xianpeng.govass.bean.BaseGovassResponse
+import com.xianpeng.govass.bean.*
 import com.xianpeng.govass.ext.toastError
 import com.xianpeng.govass.ext.toastSuccess
+import com.xianpeng.govass.fragment.policy.PolicyBase
+import com.xianpeng.govass.fragment.policy.SearchPolicyBase
 import me.hgj.jetpackmvvm.base.viewmodel.BaseViewModel
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 
 class ProjectDeclareViewModel : BaseViewModel() {
-    fun saveProjectDeclare(
-        policyName: String,
-        projectName: String,
-        projectAmmount: String,
-        projectPayAmmount: String,
-        projectAddress: String,
-        projectContract: String,
-        projectPhone: String,
-        attachmentList: List<String>
-    ) {
+    fun saveProjectDeclare(newProjectDeclareReqVo :NewProjectDeclareReqVo, attachmentList: List<String>) {
         if (attachmentList.isNotEmpty()) {
-            uploadAttachmentFileAndSave(
-                attachmentList,
-                policyName,
-                projectName,
-                projectAmmount,
-                projectPayAmmount,
-                projectAddress,
-                projectContract,
-                projectPhone
-            )
+            uploadAttachmentFileAndSave(newProjectDeclareReqVo, attachmentList)
         } else {
-            save(
-                listOf(),
-                policyName,
-                projectName,
-                projectAmmount,
-                projectPayAmmount,
-                projectAddress,
-                projectContract,
-                projectPhone
-            )
+            save(newProjectDeclareReqVo, listOf())
         }
     }
 
-    private fun uploadAttachmentFileAndSave(
-        attachmentList: List<String>,
-        policyName: String,
-        projectName: String,
-        projectAmmount: String,
-        projectPayAmmount: String,
-        projectAddress: String,
-        projectContract: String,
-        projectPhone: String
-    ) {
-        var fileList: MutableList<File> = ArrayList()
+    private fun uploadAttachmentFileAndSave(newProjectDeclareReqVo :NewProjectDeclareReqVo, attachmentList: List<String>) {
+        val fileList: MutableList<File> = ArrayList()
         for (i in attachmentList.indices) {
-            var file = File(attachmentList[i])
+            val file = File(attachmentList[i])
             fileList.add(file)
         }
 
@@ -81,23 +46,14 @@ class ProjectDeclareViewModel : BaseViewModel() {
                         return
                     }
 
-                    var attachmtnList: MutableList<Attachment> = java.util.ArrayList()
-                    for (i in 0 until response.data.size) {
-                        var attachmentItem: Attachment = response.data.get(i)
+                    val attachmentList: MutableList<Attachment> = java.util.ArrayList()
+                    for (i in response.data.indices) {
+                        val attachmentItem: Attachment = response.data.get(i)
                         attachmentItem.name = attachmentItem.fileName
                         attachmentItem.url = attachmentItem.filePath
-                        attachmtnList.add(attachmentItem)
+                        attachmentList.add(attachmentItem)
                     }
-                    save(
-                        attachmtnList,
-                        policyName,
-                        projectName,
-                        projectAmmount,
-                        projectPayAmmount,
-                        projectAddress,
-                        projectContract,
-                        projectPhone
-                    )
+                    save(newProjectDeclareReqVo, attachmentList)
                 }
 
                 override fun onError(anError: ANError?) {
@@ -106,26 +62,8 @@ class ProjectDeclareViewModel : BaseViewModel() {
             })
     }
 
-    private fun save(
-        attachmentList: List<Attachment>,
-        policyName: String,
-        projectName: String,
-        projectAmmount: String,
-        projectPayAmmount: String,
-        projectAddress: String,
-        projectContract: String,
-        projectPhone: String
-    ) {
-        var newProjectDeclareReqVo = NewProjectDeclareReqVo()
+    private fun save(newProjectDeclareReqVo :NewProjectDeclareReqVo, attachmentList: List<Attachment>) {
         newProjectDeclareReqVo.attachmentList = attachmentList
-        newProjectDeclareReqVo.policyName = policyName
-        newProjectDeclareReqVo.name = projectName
-        newProjectDeclareReqVo.outputOfLastYear = projectAmmount
-        newProjectDeclareReqVo.taxOfLastYear = projectPayAmmount
-        newProjectDeclareReqVo.address = projectAddress
-        newProjectDeclareReqVo.linkman = projectContract
-        newProjectDeclareReqVo.contact = projectPhone
-
         AndroidNetworking.post(Constants.POST_PROJECT_DECLARE_SAVE)
             .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
             .addApplicationJsonBody(newProjectDeclareReqVo)
@@ -142,10 +80,40 @@ class ProjectDeclareViewModel : BaseViewModel() {
                         return
                     }
                     toastSuccess("项目申报提交成功，待管理员审核")
+                    val readMsg = Msg()
+                    readMsg.msg = MSGTYPE.POST_PROJECT_DECLARE_SUCCESS.name
+                    EventBus.getDefault().post(readMsg)
                 }
 
                 override fun onError(anError: ANError?) {
                     toastError("项目申报提交失败，请稍后再试")
+                }
+            })
+    }
+
+    fun getPolicy(keyWord:String?){
+        AndroidNetworking.get(Constants.GET_POLICY_BY_SEARCH + keyWord)
+            .addHeaders("token", MMKV.defaultMMKV().getString("loginToken", ""))
+            .build().getAsObject(SearchPolicyBase::class.java, object :
+                ParsedRequestListener<SearchPolicyBase> {
+                override fun onResponse(response: SearchPolicyBase?) {
+                    if (response == null) {
+                        toastError("获取政策文件库数据失败，请稍后再试")
+                        return
+                    }
+                    if (response.code != 0) {
+                        toastError(response.msg!!)
+                        return
+                    }
+
+                    val readMsg = Msg()
+                    readMsg.msg = MSGTYPE.GET_POLICY_BY_SEARCH_SUCCESS.name
+                    readMsg.searchPolicyDta = response.data!!
+                    EventBus.getDefault().post(readMsg)
+                }
+
+                override fun onError(anError: ANError?) {
+                    toastError(anError!!.errorDetail)
                 }
             })
     }

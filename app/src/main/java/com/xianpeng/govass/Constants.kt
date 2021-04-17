@@ -47,6 +47,9 @@ class Constants {
         //政策文件详情
         const val GET_POLICY_DETAIL = "$BASE_IP/govass/sys/policy/info/"
 
+        //关键字搜索政策文件
+        const val GET_POLICY_BY_SEARCH = "$BASE_IP/govass/sys/policy/search?keyword="
+
         //banner数据
         const val GET_BANNER_LIST = "$BASE_IP/govass/sys/rotationplot/listForApp"
 
